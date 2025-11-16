@@ -1,0 +1,26 @@
+#navbar-home{
+    background-color:black;
+}
+#home{
+    padding-left: 30px;
+}
+#nav-list{
+    padding-right: 60px;
+}
+#box{
+    height:1400px;
+    border-radius: 20px;
+    border: 1px solid lightgray;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+#innerbox{
+    height:1200px;
+    margin-top: 40px;
+    background-color: rgb(235, 234, 234);
+}
+#innerbox1{
+    height:300px;
+    margin-top: 80px;
+    background-color: lightgray;
+}

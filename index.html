@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Blockly</title>
+        <!-- Font Awesome icons (free version)-->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">      
+        <!-- Google fonts-->
+
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet"/>
+        <link href="css/index.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+      
+    </head>
+    <body>
+        <!-- Navbar -->
+        <nav class="navbar navbar-light bg-dark">
+            <a class="navbar-brand" href="index.html"><i class="fa fa-home fa-2x" id="home" aria-hidden="true"></i></a>
+            <form class="form-inline my-2 my-lg-0">                
+                <button type="button" id="login" onclick="logIn()" class="btn btn-secondary btn-lg mr-md-5">Login</button>
+            </form>
+        </nav>
+          
+          <div class="container">
+              <!-- Heading -->
+              <div class="row" id="heading">
+                <p>Block-Based Programming</p>       
+              </div>
+              <div class="row" >
+                <div class="col-sm-7" id="underline">
+                    <div class="row" >
+                        <hr >
+                    </div>                 
+                </div>                  
+              </div>
+              <!-- content -->
+              <div class="row">
+                  <div class="col-sm-5" id="content">
+                    <div class="row">
+                        <p>
+                          Block-based coding is a form of programming language where the developer issues instructions by dragging and dropping blocks. This helps to prevent syntax errors and developers do not have to memorize syntax to write code.
+                        </p>
+                    </div>
+                    <div class="dropdown mr-sm-3">
+                      <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="signupDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Get-Started
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="signupDropdown">
+                        <a class="dropdown-item" href="#" onclick="goToStudent()">Student</a>
+                        <a class="dropdown-item" href="#" onclick="goToTeacher()">Teacher</a>
+                      </div>
+                    </div>  
+                  </div>
+                  <div class="col-sm-1"></div>
+                  <div class="col-sm-6" id="rectangle">    
+                    <img src="assets/indexImage.png" alt="" height="400px" width="600px">                  
+                  </div>
+              </div>
+          </div>
+           
+
+          <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+
+
+          <script>
+            function signUp() {
+              location.assign("role.html")
+            }
+            function logIn() {
+              location.assign("login.html")
+            }
+              function goToStudent() {
+              location.assign("signupStudent.html");
+            }
+
+            function goToTeacher() {
+              location.assign("signupTeacher.html");
+            }
+
+            function logIn() {
+              location.assign("login.html");
+            }
+        </script>
+        
+    </body>

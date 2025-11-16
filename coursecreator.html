@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Blockly</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="css/styles.css" rel="stylesheet" />
+  <link href="css/coursecreator.css" rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+    crossorigin="anonymous">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
+
+  <script>
+    // Firebase config
+    var firebaseConfig = {
+      apiKey: "AIzaSyBTNIg29kbCt-GhFenHNZa34Xkl8M4k8cw",
+      authDomain: "block-5acdc.firebaseapp.com",
+      projectId: "block-5acdc",
+      storageBucket: "block-5acdc.appspot.com",
+      messagingSenderId: "57460143611",
+      appId: "1:57460143611:web:3efd4e65ab5898b59fc75e",
+      measurementId: "G-31XZGSV3WT"
+    };
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    var db = firebase.firestore();
+  </script>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark" id="navbar-home">
+    <a class="navbar-brand" href="dashboard_teach.html"><i class="fa fa-home fa-2x" id="home"></i></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto" id="nav-list">
+        <li class="nav-item active">
+          <button type="button" class="btn-sm btn btn-primary mr-sm-1">
+            <a class="nav-link" id="nav_text" href="teach_my_projects.html">My Projects</a>
+          </button>
+        </li>
+        <li><img src="assets/prof.jpeg" alt="" height="45px" width="45px"></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="nav_text" href="#" role="button"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          </a>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a class="dropdown-item" href="my_profile.html">My Profile</a>
+            <a class="dropdown-item" href="course_list.html">View Courses</a>
+            <a class="dropdown-item" id="signOut" onclick="signOut()">Logout</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-9 mx-auto" id="rectangle1">
+        <div class="row">
+          <div class="col-8 ml-sm-4">
+            <h1>Course Creator</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-9 mx-auto" id="rectangle">
+        <div class="form-group mt-md-3">
+          <label>Course Title</label>
+          <input type="text" class="form-control" id="course_title" placeholder="">
+        </div>
+        <div class="form-group">
+          <label>Course Description</label>
+          <textarea class="form-control" id="course_discription" rows="3"></textarea>
+        </div>
+        <div class="form-inline mt-md-3">
+          <button type="button" id="save" onclick="createCourse()"
+            class="btn btn-secondary btn-lg col-sm-5 mx-auto">Save Course</button>
+        </div><br>
+        <div id="msg" class="text-center text-danger font-weight-bold"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+
+  <script>
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let email = "";
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        email = user.email;
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    function generateString() {
+      let result = '';
+      for (let i = 0; i < 6; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return result;
+    }
+
+    async function createCourse() {
+      const title = document.getElementById('course_title').value.trim();
+      const desc = document.getElementById('course_discription').value.trim();
+      const msg = document.getElementById('msg');
+      msg.textContent = "";
+
+      if (!title || !desc) {
+        msg.textContent = "Please fill in all fields.";
+        return;
+      }
+
+      try {
+        const docRef = db.collection("teachers").doc(email);
+        const teacherDoc = await docRef.get();
+
+        if (!teacherDoc.exists) {
+          msg.textContent = "Teacher profile not found. Please make sure your teacher record exists.";
+          return;
+        }
+
+        const teacher_name = teacherDoc.data().name || "Unknown";
+        await docRef.collection("course").doc(title).set({
+          course_title: title,
+          course_discription: desc,
+          teacher_name: teacher_name,
+          course_code: generateString(),
+          created_at: new Date()
+        });
+
+      
+        window.location.href = "course_list.html";
+
+      } catch (err) {
+        console.error("Error creating course:", err);
+        msg.textContent = "Error creating course.";
+      }
+    }
+
+    function signOut() {
+      firebase.auth().signOut();
+      window.location.replace('login.html');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+/* <!-- Navbar --> */
+#home{
+    height: 20px;
+    color: white;
+    margin-left: 50px;
+}
+#Sign-up{
+    border-radius: 25px;
+}
+
+#login{
+    border-radius: 25px;
+}
+
+/* <!-- Heading --> */
+#heading{
+    margin-top: 50px;
+    font-size: 56px;
+}
+
+#underline{
+    background-color: blue;
+    height: 5px;    
+}
+
+/* <!-- content --> */
+#content{
+    margin-top: 100px;
+    font-size: 20px;
+    line-height: 32px;
+}
+
+#get_started{
+    background: #4CB4FF;
+    border-radius: 49px;
+    color: white;
+    border: 1px solid #4CB4FF;    
+}
+
+#rectangle {
+    
+    margin-top: 50px;
+    height: 400px;    
+    /* background-color: rgb(165, 149, 149); */
+    /* background-image: url("/assets/indexImage.png"); */
+
+  }

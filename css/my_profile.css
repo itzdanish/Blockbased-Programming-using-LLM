@@ -1,0 +1,43 @@
+#nav_text{
+    color: white;
+}
+#home{
+    height: 40px;
+    color: white;
+    margin-left: 50px;
+}
+#home_but{
+    background-color: transparent;
+    border-color: transparent;
+}
+#nav-list{
+    padding-right: 60px;
+}
+
+#rectangle{
+    height:550px;
+    border-radius: 20px;
+    border: 2px solid lightgray;
+    
+}
+#h1tag{
+    margin-top: 10px;
+    margin-left: 35px;
+}
+#circle{
+    margin-top: 15px;
+    height:180px;
+    
+    border-radius: 50%;
+    border: 2px solid lightgray;    
+   
+}
+#change_photo{
+    margin-left: 12px;
+    margin-top: 2px;
+    background-color: transparent;
+    border-color: transparent;
+}
+#but{
+    width: 150px;
+}
