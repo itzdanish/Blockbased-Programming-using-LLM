@@ -1,0 +1,224 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Teacher - Review Submissions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
+  <style>
+    body { padding:20px; }
+    pre { background:#f4f4f4; padding:8px; }
+  </style>
+</head>
+<body>
+  <h3>Teacher - Review Submissions</h3>
+  <p><a href="dashboard_teach.html">← Back to dashboard</a></p>
+  <div>
+    <strong>Project:</strong> <span id="projectTitle"></span>
+    <strong style="margin-left:20px">Course:</strong> <span id="courseTitle"></span>
+  </div>
+  <hr>
+  <div id="loading">Loading submissions...</div>
+  <table class="table table-bordered" id="submissionsTable" style="display:none">
+    <thead><tr><th>Student Email</th><th>Submitted At</th><th>Status</th><th>Score</th><th>Feedback</th><th>Actions</th></tr></thead>
+    <tbody id="submissionsBody"></tbody>
+  </table>
+
+  <!-- Grade Modal -->
+  <div class="modal fade" id="gradeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Grade Submission</h5></div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Student Email</label>
+            <input id="g_student_email" class="form-control" readonly />
+          </div>
+          <div class="form-group">
+            <label>Score</label>
+            <input id="g_score" type="number" class="form-control" min="0" max="100" />
+          </div>
+          <div class="form-group">
+            <label>Feedback</label>
+            <textarea id="g_feedback" class="form-control"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="g_status" class="form-control">
+              <option value="graded">graded</option>
+              <option value="needs_revision">needs_revision</option>
+              <option value="submitted">submitted</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button id="g_save" class="btn btn-primary">Save Grade</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View History Modal -->
+  <div class="modal fade" id="historyModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Submission History</h5></div>
+        <div class="modal-body">
+          <div id="historyList">Loading history...</div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-secondary" data-dismiss="modal">Close</button></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  var fbCfg = window.firebaseConfig || {
+      apiKey: "AIzaSyBTNIg29kbCt-GhFenHNZa34Xkl8M4k8cw",
+      authDomain: "block-5acdc.firebaseapp.com",
+      projectId: "block-5acdc",
+      storageBucket: "block-5acdc.appspot.com",
+      messagingSenderId: "57460143611",
+      appId: "1:57460143611:web:3efd4e65ab5898b59fc75e",
+      measurementId: "G-31XZGSV3WT"
+    };
+  if(!firebase.apps.length) firebase.initializeApp(fbCfg);
+  var db = firebase.firestore();
+
+  // Read project_title & course_title from sessionStorage (set by course_details when teacher clicks Review)
+  var projectTitle = sessionStorage.getItem('project_title') || null;
+  var courseTitle = sessionStorage.getItem('course_title') || null;
+  document.getElementById('projectTitle').innerText = projectTitle || '-';
+  document.getElementById('courseTitle').innerText = courseTitle || '-';
+
+  firebase.auth().onAuthStateChanged(async function(user){
+    if(!user) { alert('Please login as teacher.'); window.location.href='login.html'; return; }
+    // optionally verify user is teacher by checking teachers collection
+    loadAllSubmissions();
+  });
+
+  async function loadAllSubmissions(){
+    document.getElementById('loading').style.display = 'block';
+    var studentsRef = db.collection('students');
+    var studentsSnap = await studentsRef.get();
+    var results = [];
+    for(const s of studentsSnap.docs) {
+      try {
+        var email = s.data().email || s.id;
+        var subDoc = await db.collection('students').doc(email).collection('ProjectSubmissions').doc(projectTitle).get();
+        if(subDoc.exists){
+          const d = subDoc.data();
+          results.push({email: email, data: d});
+        }
+      } catch(e){ console.error('Error reading for student', s.id, e); }
+    }
+    populateTable(results);
+  }
+
+  function populateTable(results){
+    document.getElementById('loading').style.display = 'none';
+    const tbody = document.getElementById('submissionsBody');
+    tbody.innerHTML = '';
+    if(results.length === 0) {
+      document.getElementById('submissionsTable').style.display = 'none';
+      document.getElementById('loading').innerText = 'No submissions yet.';
+      return;
+    }
+    document.getElementById('submissionsTable').style.display = 'table';
+    for(const r of results){
+      const d = r.data || {};
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.email}</td>
+        <td>${d.submittedAt ? new Date(d.submittedAt.seconds*1000).toLocaleString() : '-'}</td>
+        <td>${d.status||'-'}</td>
+        <td>${d.score ?? '-'}</td>
+        <td>${d.feedback ? (Array.isArray(d.feedback)? d.feedback.join('; '): d.feedback) : '-'}</td>
+        <td>
+          <button class="btn btn-sm btn-primary" onclick="openGradeModal('${r.email}')">Grade</button>
+          <button class="btn btn-sm btn-info" onclick="viewSubmission('${r.email}')">View</button>
+          <button class="btn btn-sm btn-secondary" onclick="viewHistory('${r.email}')">History</button>
+        </td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
+  async function openGradeModal(studentEmail){
+    document.getElementById('g_student_email').value = studentEmail;
+    // load existing values
+    const doc = await db.collection('students').doc(studentEmail).collection('ProjectSubmissions').doc(projectTitle).get();
+    if(doc.exists){
+      const d = doc.data();
+      document.getElementById('g_score').value = d.score ?? '';
+      document.getElementById('g_feedback').value = d.feedback ?? '';
+      document.getElementById('g_status').value = d.status || 'graded';
+    } else {
+      document.getElementById('g_score').value = '';
+      document.getElementById('g_feedback').value = '';
+      document.getElementById('g_status').value = 'graded';
+    }
+    $('#gradeModal').modal('show');
+  }
+
+  document.getElementById('g_save').addEventListener('click', async function(){
+    const studentEmail = document.getElementById('g_student_email').value;
+    const score = Number(document.getElementById('g_score').value || 0);
+    const feedback = document.getElementById('g_feedback').value;
+    const status = document.getElementById('g_status').value;
+    const grader = firebase.auth().currentUser.email;
+    const ref = db.collection('students').doc(studentEmail).collection('ProjectSubmissions').doc(projectTitle);
+    await ref.update({
+      score: score,
+      feedback: feedback,
+      status: status,
+      gradedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      graderEmail: grader
+    }).catch(async (e)=>{
+      // if update fails because doc doesn't exist, create it
+      await ref.set({
+        score: score,
+        feedback: feedback,
+        status: status,
+        gradedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        graderEmail: grader
+      });
+    });
+    $('#gradeModal').modal('hide');
+    // refresh list
+    loadAllSubmissions();
+  });
+
+  async function viewSubmission(studentEmail){
+    const doc = await db.collection('students').doc(studentEmail).collection('ProjectSubmissions').doc(projectTitle).get();
+    if(!doc.exists){ alert('No submission'); return; }
+    const d = doc.data();
+    const xml = d.workspace_xml || '';
+    const code = d.code || '';
+    const html = `<h5>Code</h5><pre>${escapeHtml(code)}</pre><h5>Workspace XML</h5><pre>${escapeHtml(xml)}</pre>`;
+    const win = window.open('', '_blank', 'width=900,height=700');
+    win.document.write(html);
+  }
+
+  async function viewHistory(studentEmail){
+    const histRef = db.collection('students').doc(studentEmail).collection('ProjectSubmissions').doc(projectTitle).collection('history');
+    const snap = await histRef.orderBy('submittedAt','desc').get();
+    let out = '<ul class="list-group">';
+    snap.forEach(doc=>{
+      const d = doc.data();
+      out += `<li class="list-group-item"><strong>${doc.id}</strong> - ${d.submittedAt ? new Date(d.submittedAt.seconds*1000).toLocaleString(): '-'} - Status: ${d.status||'-'}<br/><small>Score: ${d.score ?? '-'} Feedback: ${d.feedback ?? '-'}</small></li>`;
+    });
+    out += '</ul>';
+    document.getElementById('historyList').innerHTML = out;
+    $('#historyModal').modal('show');
+  }
+
+  function escapeHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+</script>
+</body>
+</html>

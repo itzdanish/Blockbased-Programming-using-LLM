@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>CourseDetails</title>
-    <meta name="description" content="">
+    <title>Course Details</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/course_details.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <!-- Font Awesome icons (free version)-->
-    <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+
+    <!-- FontAwesome -->
+    <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js"></script>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
@@ -20,12 +20,10 @@
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <!-- JQuery -->
+    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 
     <script>
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-
         var firebaseConfig = {
             apiKey: "AIzaSyBTNIg29kbCt-GhFenHNZa34Xkl8M4k8cw",
             authDomain: "block-5acdc.firebaseapp.com",
@@ -35,274 +33,324 @@
             appId: "1:57460143611:web:3efd4e65ab5898b59fc75e",
             measurementId: "G-31XZGSV3WT"
         };
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
-
-
         var db = firebase.firestore();
     </script>
+
+    <style>
+        .btn-clean {
+            border-radius: 6px !important;
+            padding: 6px 12px !important;
+            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+        }
+        table td, table th {
+            vertical-align: middle !important;
+        }
+    </style>
 
 </head>
 
 <body>
+
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-dark " id="navbar-home">
-        <a class="navbar-brand" href="dashboard_stud.html"><i class="fa fa-home fa-2x" id="home"></i></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto" id="nav-list">
-               
-                <li class="nav-item active">
-                    <button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text"
-                            href="#">My
-                            Projects</a></button>
-                </li>
-                <li class="nav-item active">
-                    <button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text"
-                            href="stud_courselist.html">Enroll a course</a></button>
-                </li>
-                <li>
-                    <img src="assets/prof.jpeg" alt="" height="45px" width="45px">
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="nav_text" href="#" id="navbarDropdownMenuLink" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="my_profile.html">My Profile</a>
-                        <a class="dropdown-item" href="stud_courselist.html">View Courses</a>
-                        <a class="dropdown-item" id="signOut" onclick="signOut()">Logout</a>
-                    </div>
-                </li>
-
-        </div>
-
-        </ul>
-        </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+        <a class="navbar-brand" href="dashboard_stud.html">
+            <i class="fa fa-home fa-2x" id="home"></i>
+        </a>
     </nav>
-    <!-- Navbar end -->
 
-    <div class="container">
-        <div class="row ">
-            <div data-spy="scroll" class="col-12 mt-md-5" id="box">
-                <h1 id="courseTitle" class=" m-md-3">Course_Title</h1>
-                <div id="courseDescription" class="m-md-3">
+    <!-- Course Content -->
+    <div class="container mt-5">
+        <h1 id="courseTitle" class="mb-3">Course Title</h1>
+        <div id="courseDescription" class="mb-4"></div>
 
-                </div>
-                <h3>Lessons</h3>
-                <table class="table table-bordered col-sm-8 ml-md-3">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
+        <h3>Lessons</h3>
+        <table class="table table-bordered col-sm-8">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody id="course_table"></tbody>
+        </table>
 
-                            <th scope="col">Last</th>
-                        </tr>
-                    </thead>
-                    <tbody id="course_table">
+        <h3>Projects / Labs</h3>
+        <table class="table table-bordered col-sm-12">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Details</th>
+                    <th>Run</th>
+                    <th>Saved</th>
+                    <th>Submitted</th>
+                    <th>Marks</th>
+                    <th>Feedback</th>
+                    <th>Progress</th>
+                </tr>
+            </thead>
+            <tbody id="course_table1"></tbody>
+        </table>
 
-                    </tbody>
-                </table>
-
-                <h3>Projects</h3>
-                <table class="table table-bordered col-sm-8 ml-md-3">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-
-                            <th scope="col">Last</th>
-                        </tr>
-                    </thead>
-                    <tbody id="course_table1">
-
-                    </tbody>
-                </table>
-
-                <br><br>
-                <!-- <button type="button" class="btn btn-primary" onclick="enroll()">Enroll Now</button> -->
-            </div>
-        </div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- LESSON MODAL -->
+    <div class="modal fade" id="exampleModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content">
+
                 <div class="modal-header">
                     <h5 class="modal-title" id="lessontitle"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                 </div>
+
                 <div class="modal-body">
-                    <div id="lessonDescription" class="m-md-3"></div>
-                    <div class="embed-responsive embed-responsive-16by9">
-                        <iframe id="lessonLink" src="" title="YouTube video player" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen></iframe>
+                    <div id="lessonDescription"></div>
+                    <div class="embed-responsive embed-responsive-16by9 mt-3">
+                        <iframe id="lessonLink" src="" frameborder="0" allowfullscreen></iframe>
                     </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECT DETAILS MODAL -->
+    <div class="modal fade" id="detailsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="projectDetailsTitle"></h5>
+                    <button class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <p><b>Description:</b></p>
+                    <div id="projectDetailsDescription" class="mb-3"></div>
+
+                    <p><b>Instructions:</b></p>
+                    <div id="projectDetailsInstructions" class="mb-3" style="white-space: pre-line;"></div>
+
+                    <p><b>Language:</b> <span id="projectDetailsLanguage"></span></p>
+                    <p><b>Difficulty:</b> <span id="projectDetailsDifficulty"></span></p>
+                    <p><b>Estimated Time:</b> <span id="projectDetailsTime"></span> mins</p>
+                    <p><b>Marks:</b> <span id="projectDetailsMarks"></span></p>
+
+                    <p><b>Resources:</b></p>
+                    <div id="projectDetailsResources"></div>
 
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        
+
+            </div>
+        </div>
+    </div>
+
+    <!-- FEEDBACK MODAL -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Feedback</h5>
+                    <button class="close" data-dismiss="modal"><span>&times;</span></button>
                 </div>
+
+                <div class="modal-body" id="feedbackText"></div>
+
             </div>
         </div>
     </div>
 
 
-
-
-    <!--NavbarScript-->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
-        crossorigin="anonymous"></script>
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
 
-        var email="";
-        firebase.auth().onAuthStateChanged(function(user) {
-  if (user) {
-    // User is signed in.
-    email=user.email;
-  } else {
-    // No user is signed in.
-    window.location.href="login.html";
-  }
-});
-  
-var course_title=sessionStorage.getItem("course_title");
-var T_email=sessionStorage.getItem("T_email");
+        var email = "";
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) email = user.email;
+            else window.location.href = "login.html";
+        });
 
-        var docRef1 = db.collection("teachers").doc(T_email).collection("course").where("course_title", "==", course_title);
-        docRef1.get()
-            .then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    // doc.data() is never undefined for query doc snapshots
-                    console.log(doc.id, " => ", doc.data());
-                    document.getElementById("courseTitle").innerHTML = doc.data().course_title;
-                    document.getElementById("courseDescription").innerHTML = doc.data().course_discription;
+        var course_title = sessionStorage.getItem("course_title");
+        var T_email = sessionStorage.getItem("T_email");
+
+        /* Load Course Info */
+        db.collection("teachers").doc(T_email).collection("course")
+            .doc(course_title).get().then(doc => {
+                let d = doc.data();
+                courseTitle.innerText = d.course_title;
+                courseDescription.innerText = d.course_discription;
+            });
+
+        /* Load Lessons */
+        db.collection("teachers").doc(T_email).collection("course")
+            .doc(course_title).collection("lessons")
+            .get().then(snap => {
+                snap.forEach(doc => {
+                    let d = doc.data();
+                    course_table.innerHTML += `
+                        <tr>
+                            <td>${d.lesson_title}</td>
+                            <td><button class="btn btn-primary btn-clean"
+                                onclick="viewLesson('${d.lesson_title}')" 
+                                data-toggle="modal" data-target="#exampleModal">View</button></td>
+                        </tr>`;
                 });
-            })
-            .catch((error) => {
-                console.log("Error getting documents: ", error);
             });
 
-        db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("lessons")
-            .get()
-            .then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    let data = doc.data();
-                    let row = '<tr>';
-                    row += `<td value="${data.lesson_title}">${data.lesson_title}</td>`;
-                    row += `<td><button type="button" id="${data.lesson_title}" data-toggle="modal" onclick="viewLesson(this.id)" data-target="#exampleModal" class="btn btn-primary">View</button></td>`;
-                    row += `</tr>`;
-
-                    let droplist = document.getElementById('course_table')
-                    droplist.innerHTML += row
-                })
-            })
-            .catch(err => {
-                console.log(`Error: ${err}`)
-            });
-
-
-            db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("projects")
-            .get()
-            .then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    let data = doc.data();
-                    let row = '<tr>';
-                    row += `<td value="${data.project_title}">${data.project_title}</td>`;
-                    row += `<td><button type="button" id="${data.project_title}" data-toggle="modal" onclick="viewProject(this.id)" data-target="#exampleModal" class="btn btn-primary">View</button></td>`;
-                    row += `</tr>`;
-
-                    let droplist = document.getElementById('course_table1')
-                    droplist.innerHTML += row
-                })
-            })
-            .catch(err => {
-                console.log(`Error: ${err}`)
-            });
-
-        function viewLesson(lesson_title) {
-            console.log(lesson_title);
-            sessionStorage.setItem("lesson_title", lesson_title);
-            var lesson_title = sessionStorage.getItem('lesson_title');
-
-            var docRef2 = db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("lessons").where("lesson_title", "==", lesson_title);
-            docRef2.get()
-                .then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        // doc.data() is never undefined for query doc snapshots
-                        console.log(doc.id, " => ", doc.data());
-                        document.getElementById("lessontitle").innerHTML = doc.data().lesson_title;
-                        document.getElementById("lessonDescription").innerHTML = doc.data().lesson_discription;
-                        var link = document.getElementById("lessonLink");
-                        var str = doc.data().lesson_link;
-                        var res = str.split("=");
-                        var str1 = "https://www.youtube.com/embed/";
-                        var final_link = str1.concat(res[1]);
-                        link.setAttribute("src", final_link)
-                    });
-                })
-                .catch((error) => {
-                    console.log("Error getting documents: ", error);
+        /* View Lesson */
+        function viewLesson(title) {
+            db.collection("teachers").doc(T_email).collection("course")
+                .doc(course_title).collection("lessons")
+                .doc(title).get().then(doc => {
+                    let d = doc.data();
+                    lessontitle.innerText = d.lesson_title;
+                    lessonDescription.innerText = d.lesson_discription;
+                    lessonLink.src = "https://www.youtube.com/embed/" + d.lesson_link.split("=")[1];
                 });
         }
 
-        
-        function viewProject(project_title) {
-            sessionStorage.setItem("project_title",project_title);
-          console.log(project_title);
-           window.location.href="blockly/Main Project/public/public/blockly/demos/code - Copy/index2.html";
+/* Load Projects / Labs */
+db.collection("teachers").doc(T_email).collection("course")
+    .doc(course_title).collection("projects")
+    .get().then(async snap => {
+
+        for (let doc of snap.docs) {
+            let d = doc.data();
+
+            /** GET STUDENT SAVE **/
+            let saveRef = db.collection("students").doc(email)
+                .collection("ProjectSaves")
+                .doc(d.project_title);
+
+            let saveSnap = await saveRef.get();
+
+
+            /** GET STUDENT SUBMISSION **/
+            let subRef = db.collection("students").doc(email)
+                .collection("ProjectSubmissions")
+                .doc(d.project_title);
+
+            let subSnap = await subRef.get();
+
+
+            /* --- Prepare Display Data --- */
+
+            let savedTime = saveSnap.exists && saveSnap.data().savedAt?.toDate
+                ? saveSnap.data().savedAt.toDate().toLocaleString()
+                : "—";
+
+            let submittedTime = subSnap.exists && subSnap.data().submittedAt?.toDate
+                ? subSnap.data().submittedAt.toDate().toLocaleString()
+                : "—";
+
+            let marks = subSnap.exists && subSnap.data().marks
+                ? subSnap.data().marks
+                : "—";
+
+            let feedback = subSnap.exists && subSnap.data().feedback
+                ? subSnap.data().feedback
+                : "";
+
+
+            /* --- Progress Calculation --- */
+            let progress = submittedTime !== "—" ? 100 : (savedTime !== "—" ? 50 : 0);
+
+
+            /* --- Build Table Row --- */
+            course_table1.innerHTML += `
+                <tr>
+                    <td>${d.project_title}</td>
+
+                    <td>
+                        <button class="btn btn-info btn-clean"
+                            onclick="viewDetails('${d.project_title}')">
+                            Details
+                        </button>
+                    </td>
+
+                    <td>
+                        <button class="btn btn-primary btn-clean"
+                            onclick="runLab('${d.project_title}')">
+                            Run
+                        </button>
+                    </td>
+
+                    <td>${savedTime}</td>
+                    <td>${submittedTime}</td>
+                    <td>${marks}</td>
+
+                    <td>
+                        <button class="btn btn-secondary btn-clean"
+                            onclick="openFeedback(\`${feedback.replace(/`/g, "")}\`)"
+                            ${feedback ? "" : "disabled"}>
+                            Feedback
+                        </button>
+                    </td>
+
+                    <td style="width:160px;">
+                        <div class="progress">
+                            <div class="progress-bar bg-success" 
+                                role="progressbar"
+                                style="width:${progress}%;">
+                                ${progress}%
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+    });
+
+
+        /* View Project Details */
+        function viewDetails(title) {
+            db.collection("teachers").doc(T_email).collection("course")
+                .doc(course_title).collection("projects")
+                .doc(title).get().then(doc => {
+                    let d = doc.data();
+
+                    projectDetailsTitle.innerText = d.project_title;
+                    projectDetailsDescription.innerText = d.project_description;
+                    projectDetailsInstructions.innerText = d.project_instructions;
+                    projectDetailsLanguage.innerText = d.project_language;
+                    projectDetailsDifficulty.innerText = d.project_difficulty;
+                    projectDetailsTime.innerText = d.project_time;
+                    projectDetailsMarks.innerText = d.project_marks;
+
+                    projectDetailsResources.innerHTML =
+                        d.project_resources
+                            ? `<a href="${d.project_resources}" target="_blank">${d.project_resources}</a>`
+                            : "No resources";
+
+                    $('#detailsModal').modal('show');
+                });
         }
 
+        /* Feedback Modal */
+        function openFeedback(text) {
+            feedbackText.innerText = text;
+            $('#feedbackModal').modal('show');
+        }
 
+        /* Run Lab */
+        function runLab(title) {
+            sessionStorage.setItem("project_title", title);
+            window.open("blockly/index.html", "_blank");
+        }
 
-        // function enroll()
-        // {
+        function signOut() {
+            firebase.auth().signOut().then(() => window.location.href = "login.html");
+        }
 
-
-        //     var docRef2 = db.collection("teachers").where("email","==",T_email);
-        //     docRef2.get()
-        //         .then((querySnapshot) => {
-        //             querySnapshot.forEach((doc) => {
-        //                 // doc.data() is never undefined for query doc snapshots
-
-                     
-
-        //         db.collection('students').doc(email).collection('EnrolledCourses').doc(course_title).set({
-        //         course_title: course_title,
-        //         teacher_name: doc.data().name,
-        //         teacher_email:T_email,
-        //     })
-
-        //             });
-        //         })
-        //         .catch((error) => {
-        //             console.log("Error getting documents: ", error);
-        //         }).then(() =>{
-        //             window.location.href="stud_enrolledcourseslist.html"
-        //         });
-
-
-
-        
-        // }
-
-        function signOut(){
-                  firebase.auth().signOut().then(()=>{
-                    window.location.href='login.html';
-                  });
-                }
     </script>
-</body>
 
+</body>
 </html>

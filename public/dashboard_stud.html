@@ -4,15 +4,15 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Teacher-Dashboard</title>
+  <title>Dashboard</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/dashboard_teach.css">
+  <link rel="stylesheet" href="css/dashboard_stud.css">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
     integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   <!-- Font Awesome icons (free version)-->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-analytics.js"></script>
@@ -43,22 +43,22 @@
 <body>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-dark " id="navbar-home">
-    <a class="navbar-brand" href="dashboard_teach.html"><i class="fa fa-home fa-2x" id="home"></i></a>
+    <a class="navbar-brand" href="dashboard_stud.html"><i class="fa fa-home fa-2x" id="home"></i></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto" id="nav-list">
+        
         <li class="nav-item active">
-          <button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text"
-              href="coursecreator.html">Create Course</a></button>
-        </li>
-        <li class="nav-item active">
-          <button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text" href="teach_my_projects.html">My
+          <button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text" href="stud_my_projects.html">My
               Projects</a></button>
         </li>
-        
+        <li class="nav-item active">
+          <button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text"
+              href="stud_courselist.html">Enroll a course</a></button>
+        </li>
         <li>
           <img src="assets/prof.jpeg" alt="" height="45px" width="45px">
         </li>
@@ -68,7 +68,7 @@
           </a>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
             <a class="dropdown-item" href="my_profile.html">My Profile</a>            
-            <a class="dropdown-item" href="course_list.html">View My Courses</a>
+            <a class="dropdown-item" href="stud_courselist.html">View Courses</a>
             <a class="dropdown-item" id="signOut" onclick="signOut()">Logout</a>
           </div>
         </li>
@@ -78,6 +78,7 @@
     </ul>
     </div>
   </nav>
+  
   <!-- Navbar end -->
   <!-- Dashboard row1 -->
   <div class="container">
@@ -94,14 +95,17 @@
           <div class="row">
             <div class="col-5 ml-sm-5">
               <br>
-              <h2>Welcome <span id="user"></span>,
-                <h4>Let's get learning.<br><br><br><br><br><button type="button" class="btn btn-primary"
-                    id="start-button" onclick="viewCourse()">View My Course</button></h4>
+              <h2 id="text">Welcome <span id="user"></span>, 
+                <h4 id="text">Let's get learning.<br><br><br><br><br><button
+                    type="button" class="btn btn-primary" onclick="viewCourse()"  id="start-button"> My Enrolled Courses</button></h4>
               </h2>
             </div>
             <div class="col-5">
               <br>
               <img src="assets/28837307.jpg" height="300px" />
+
+              <!-- <div class="img-box"> -->
+              </div>
             </div>
           </div>
         </div>
@@ -127,7 +131,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-3">
                   <br><br><br>
                   <div class="card" id="card-1">
                     <div class="card-body">
@@ -135,7 +139,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-3">
                   <br><br><br>
                   <div class="card" id="card-1">
                     <div class="card-body">
@@ -143,7 +147,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-3">
                   <br><br><br>
                   <div class="card" id="card-1">
                     <div class="card-body">
@@ -151,7 +155,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-3">
                   <br><br><br>
                   <div class="card" id="card-1">
                     <div class="card-body">
@@ -161,53 +165,56 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div> -->
+          </div> -->
           <!-- Dashboard row 2 end -->
           <!-- Dashboard row 3  -->
-          <div class="container" >
+          <div class="container">
             <div class="row">
               <div class="col-sm">
                 <br>
-                <h1>My Courses</h1>
+                <h1>Available Courses</h1>
               </div>
             </div>
             <div class="row">
               <div class="col-12">
                 <div class="scrollmenu">
                   <div class="row" id="dashboardCourseList">
-                   
+                    
+                    </div>
                   </div>
                 </div>
+                <br><br><br>
               </div>
               <br><br><br>
-            </div><br>
               <!-- Dashboard row 3 end -->
               <script>
 
+                firebase.auth().onAuthStateChanged(function(user) {
+                  if (user) {
+                    // User is signed in.
+                    var email=user.email;
 
-var email="";
-firebase.auth().onAuthStateChanged(function(user) {
-  if (user) {
-    // User is signed in.
-    email=user.email;
-    console.log(email);
-                var docRef = db.collection("teachers").doc(email);
+                    var docRef = db.collection("students").doc(email.toString());
 
-                docRef.get().then((doc) => {
-                  if (doc.exists) {
-                    console.log("Document data:", doc.data());
-                    document.getElementById("user").innerHTML = doc.data().name;
-                  } else {
-                    // doc.data() will be undefined in this case
-                    console.log("No such document!");
-                  }
-                }).catch((error) => {
-                  console.log("Error getting document:", error);
-                });
+                    docRef.get().then((doc) => {
+                      if (doc.exists) {
+                        console.log("Document data:", doc.data());
+                        document.getElementById("user").innerHTML = doc.data().name;
+                      } else {
+                        // doc.data() will be undefined in this case
+                        console.log("No such document!");
+                      }
+                    }).catch((error) => {
+                      console.log("Error getting document:", error);
+                    });
 
-            
-                        db.collection("teachers").doc(email).collection("course")
+
+                    db.collection("teachers")
+                    .get()
+                    .then(querySnapshot => {
+                      querySnapshot.forEach(doc => {
+                        var Temail= doc.data().email;
+                        db.collection("teachers").doc(Temail).collection("course")
                         .get()
                         .then(querySnapshot => {
                           querySnapshot.forEach(doc => {
@@ -225,7 +232,7 @@ firebase.auth().onAuthStateChanged(function(user) {
                         let row = `<div class="col-3">`;
                         row+=`<br><br><br>`;
                         row += `<div class="card" id="card-1">`;
-                        row += `<div class="card-body" > `;
+                        row += `<div class="card-body"> `;
                         row += `<p id="course-title">${data.course_title}</p>`;
                         row += `</div>`;
                         row += `</div>`;
@@ -236,29 +243,34 @@ firebase.auth().onAuthStateChanged(function(user) {
                         droplist.innerHTML += row
                           })
                         })
-                
+                        
+                      })
+                    })
                     .catch(err => {
                       console.log(`Error: ${err}`)
                     });
 
+                  } else {
+                    // No user is signed in.
+                    // alert("Error occuered. Please try again!!!");
+                    window.location.href="login.html";
+                    
+                  }
+                });
 
-
-  } else {
-    // No user is signed in.
-    window.location.href="login.html"
-  }
-});
-
-
-
-                function signOut() {
-                  firebase.auth().signOut();
-                  window.location.replace('login.html');
-                }
-                
                 function viewCourse()
                 {
-                  window.location.href="course_list.html";                }
+                  window.location.href="stud_enrolledcourseslist.html";
+                }
+               
+               
+
+                function signOut(){
+                  firebase.auth().signOut().then(()=>{
+                    window.location.href='login.html';
+                  });
+                }
+
 
               </script>
 

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>CourseDetails</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/course_details.css">
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+    integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+  <!-- Font Awesome icons (free version)-->
+  <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
+
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
+    var firebaseConfig = {
+      apiKey: "AIzaSyBTNIg29kbCt-GhFenHNZa34Xkl8M4k8cw",
+      authDomain: "block-5acdc.firebaseapp.com",
+      projectId: "block-5acdc",
+      storageBucket: "block-5acdc.appspot.com",
+      messagingSenderId: "57460143611",
+      appId: "1:57460143611:web:3efd4e65ab5898b59fc75e",
+      measurementId: "G-31XZGSV3WT"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+
+
+    var db = firebase.firestore();
+  </script>
+
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark " id="navbar-home">
+    <a class="navbar-brand" href="dashboard_teach.html"><i class="fa fa-home fa-2x" id="home"></i></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto" id="nav-list">
+        <li class="nav-item active">
+          <button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text"
+              href="coursecreator.html">Create</a></button>
+        </li>
+        <li class="nav-item active">
+          <button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text" href="teach_my_projects.html">My Projects</a></button>
+        </li>
+        <li>
+          <img src="assets/prof.jpeg" alt="" height="45px" width="45px">
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="nav_text" href="#" id="navbarDropdownMenuLink" role="button"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" href="my_profile.html">My Profile</a>
+            <a class="dropdown-item" href="course_list.html">View Courses</a>
+            <a class="dropdown-item" id="signOut" onclick="signOut()">Logout</a>
+          </div>
+        </li>
+
+    </div>
+
+    </ul>
+    </div>
+  </nav>
+  <!-- Navbar end -->
+
+  <div class="container">
+    <div class="row ">
+      <div data-spy="scroll" class="col-12 mt-md-5" id="box">
+        <h1 id="courseTitle" class=" m-md-3">Course_Title</h1>
+        <h5>Course code: </h5><b><div id="courseid" class="m-md-3">Course Id</div></b>
+        <div id="courseDescription" class="m-md-3">
+
+        </div>
+        <h3 style="text-align: left;">Lessons</h3>
+        <table class="table 
+        table-bordered col-sm-8 ml-md-3">
+        
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">View Lesson</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody id="course_table">
+  
+          </tbody>
+        </table>
+
+        <h3 style="text-align: left;">Projects</h3>
+        <table class="table table-bordered col-sm-8 ml-md-3">
+        
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <!-- <th scope="col">View Lesson</th> -->
+              <th scope="col">Delete</th>
+              <th scope="col">View</th>
+
+            </tr>
+          </thead>
+          <tbody id="course_table1">
+  
+          </tbody>
+        </table>
+
+        <br><br>
+        <p>Enrolled:<span id="countStudents">129</span><br><br>
+          <button type="button" id="create_lesson" class="btn btn-secondary btn-md col-sm-5 mx-auto"
+                            data-toggle="modal" data-target="#exampleModaldd">Create Lesson</button>
+          <button type="button" id="create_project" class="btn btn-secondary btn-md col-sm-5 mx-auto"
+                            data-toggle="modal" data-target="#exampleModalproject">Create Project</button>
+                            
+          <button type="button" style="margin-top: 20px;" id="" data-toggle="modal" onclick="studentList()" class="btn btn-primary">Students
+            Enrolled List</button>
+          <button type="button" style="margin-top: 20px;" data-toggle="modal" data-target="#exampleModal2"
+            class="btn btn-info ">Edit Course</button>
+          <button type="button" style="margin-top: 20px;" onclick="deleteCourse(course_title)"
+            class="btn btn-danger ">Delete Course</button>
+
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModaldd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create Lesson</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="dropdown mt-md-3">
+                    <!-- <button class="btn btn-secondary dropdown-toggle col-sm-12 " type="button" id="select_ct"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Select Course
+                    </button> -->
+                    <!-- <div id="drop" class="dropdown-menu col-sm-12" aria-labelledby="dropdownMenuButton"> -->
+                        <!-- <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a> -->
+                    <!-- </div> -->
+
+                    <select id="drop" class="form-select btn btn-secondary dropdown-toggle col-sm-12 " aria-label="Default select example">
+                        <option selected>Select course name</option>
+                        <!-- <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option> -->
+                      </select>
+                </div>
+                <div class="form-group mt-md-3">
+                    <label>Lesson Title</label>
+                    <input type="text" class="form-control" id="lesson_title" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Lesson Description</label>
+                    <textarea class="form-control" id="lesson_discription" rows="3"></textarea>
+                </div>
+                <div class="form-group mt-md-3">
+                    <label>Video Link</label>
+                    <input type="text" class="form-control" id="lesson_link" placeholder="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="createLesson()" class="btn btn-primary ">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  <!-- Modal Project -->
+  <div class="modal fade" id="exampleModalproject" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                    <!-- <button class="btn btn-secondary dropdown-toggle col-sm-12 " type="button" id="select_ct"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Select Course
+                    </button> -->
+                    <!-- <div id="drop" class="dropdown-menu col-sm-12" aria-labelledby="dropdownMenuButton"> -->
+                        <!-- <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a> -->
+                    <!-- </div> -->
+
+                  
+              
+                <div class="form-group mt-md-3">
+                    <label>Project Title</label>
+                    <input type="text" class="form-control" id="project_title" placeholder="">
+                </div>
+             
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="createProject()" class="btn btn-primary ">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="lessontitle"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="lessonDescription" class="m-md-3"></div>
+          <div class="embed-responsive embed-responsive-16by9">
+            <iframe id="lessonLink" src="" title="YouTube video player" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen></iframe>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal1">Edit
+            lessons</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for edit Lesson -->
+  <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Lesson</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Lesson Description</label>
+            <textarea class="form-control" id="edit_lesson_discription" rows="3"></textarea>
+          </div>
+          <div class="form-group mt-md-3">
+            <label>Video Link</label>
+            <input type="text" class="form-control" id="edit_lesson_link" placeholder="">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" onclick="updateProfile()" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Course</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Course Description</label>
+            <textarea class="form-control" id="edit_course_discription" rows="3"></textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" onclick="updateCourse()" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!--NavbarScript-->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+    crossorigin="anonymous"></script>
+
+  <script>
+
+    var email = "";
+    var course_title = "";
+    
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        // User is signed in.
+        email = user.email;
+        course_title = sessionStorage.getItem('course_title');
+
+
+
+        console.log(course_title);
+        var docRef1 = db.collection("teachers").doc(email).collection("course").where("course_title", "==", course_title);
+        docRef1.get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              // doc.data() is never undefined for query doc snapshots
+              console.log(doc.id, " => ", doc.data());
+              document.getElementById("courseTitle").innerHTML = doc.data().course_title;
+              document.getElementById("courseid").innerHTML = doc.data().course_id;
+              document.getElementById("courseDescription").innerHTML = doc.data().course_discription;
+              document.getElementById("courseid").innerHTML = doc.data().course_code;
+            });
+          })
+          .catch((error) => {
+            console.log("Error getting documents: ", error);
+          });
+
+        db.collection("teachers").doc(email).collection("course").doc(course_title).collection("lessons")
+          .get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              let data = doc.data();
+              let row = '<tr>';
+              row += `<td value="${data.lesson_title}">${data.lesson_title}</td>`;
+              row += `<td><button type="button" id="${data.lesson_title}" data-toggle="modal" onclick="viewLesson(this.id)" data-target="#exampleModal" class="btn btn-primary">View Lesson</button></td>`;
+              row += `<td><button type="button" id="${data.lesson_title}"  onclick="deleteLesson(this.id)"  class="btn btn-danger">Delete Lessson</button></td>`;
+              row += `</tr>`;
+
+              let droplist = document.getElementById('course_table')
+              droplist.innerHTML += row
+            })
+          })
+          .catch(err => {
+            console.log(`Error: ${err}`)
+          });
+
+
+          db.collection("teachers").doc(email).collection("course").doc(course_title).collection("projects")
+          .get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              let data = doc.data();
+              let row = '<tr>';
+              row += `<td value="${data.project_title}">${data.project_title}</td>`;
+              row += `<td><button type="button" id="${data.project_title}"  onclick="deleteProject(this.id)"  class="btn btn-danger">Delete Project</button></td>`;
+              row += `<td><button type="button" id="${data.project_title}"  onclick="goToBlockly(this.id)"  class="btn btn-primary">View</button></td>`;
+              row += `</tr>`;
+
+              
+
+              let droplist = document.getElementById('course_table1')
+              droplist.innerHTML += row
+            })
+          })
+          .catch(err => {
+            console.log(`Error: ${err}`)
+          });
+
+        // get student count
+        let count = 0;
+
+        var docRef2 = db.collection("students");
+        docRef2.get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              // doc.data() is never undefined for query doc snapshots
+
+
+
+              db.collection('students').doc(doc.data().email).collection('EnrolledCourses').where("course_title", "==", course_title).get()
+                .then((querySnapshot) => {
+                  querySnapshot.forEach((doc) => {
+                    count = count + 1;
+
+
+                  });
+
+                }).then(() => {
+                  document.getElementById("countStudents").innerHTML = count;
+                });
+
+            });
+          })
+          .catch((error) => {
+            console.log("Error getting documents: ", error);
+          });
+
+
+           // display courses in dropdown start
+
+         db.collection("teachers").doc(email).collection("course").where("course_title","==",course_title)
+            .onSnapshot(querySnapshot=>{
+                    querySnapshot.forEach(doc=>{
+                        let data = doc.data();
+                        let row  = `<option value="${data.course_title}">${data.course_title}</option>`;
+
+                        let droplist = document.getElementById('drop');
+                        let droplist1=document.getElementById('project_title').value
+                        droplist.innerHTML += row;
+                        droplist1.innerHTML += row;
+                    })
+                })
+                .catch(err=>{
+                    console.log(`Error: ${err}`)
+                });
+
+
+        //display courses in dropdown end
+
+        
+
+      } else {
+        // No user is signed in.
+        window.location.href="login.html"
+      }
+    });
+
+
+    function createLesson() {
+        
+        var lesson_title = document.getElementById('lesson_title').value;
+        var lesson_discription = document.getElementById('lesson_discription').value;
+        var lesson_link = document.getElementById('lesson_link').value;
+        var select_ct = document.getElementById('drop').value;
+
+        db.collection('teachers').doc(email).collection('course').doc(select_ct).collection('lessons').doc(lesson_title).set({
+            lesson_title: lesson_title,
+            lesson_discription: lesson_discription,
+            lesson_link: lesson_link,
+        }).then(()=>{
+            location.reload();
+        })
+        $('#exampleModal').modal('hide');
+    }
+
+    // function createProject() {
+        
+    //     var project_title = document.getElementById('project_title').value;
+    //     var select_ct = document.getElementById('drop1').value;
+
+    //     db.collection('teachers').doc(email).collection('course').doc(select_ct).collection('projects').doc(project_title).set({
+    //         project_title: project_title,
+   
+    //     }).then(()=>{
+    //         location.reload();
+    //     })
+    //     $('#exampleModalproject').modal('hide');
+    // }
+
+    function createProject()
+          {
+            
+            // var projectTitlex=document.getElementById("projectTitle").value;
+            var project_title = document.getElementById('project_title').value;
+            var select_ct = sessionStorage.getItem("course_title");
+            
+            console.log("Project tilte",project_title);
+            console.log(`Select value ${select_ct}`);
+            window.alert("hello")
+
+            var docRef = db.collection("AllProjects").doc(project_title);
+
+              docRef.get().then((doc) => {
+                  if (doc.exists) {
+                      console.log("Document data:", doc.data());
+                      Swal.fire({
+                    icon: 'error',
+                    title: 'Project Already Exists!!!',
+                    
+                  
+                  }).then(()=>{
+                    $('#createModal').modal('hide');
+
+                  })
+                  } else {
+                      // doc.data() will be undefined in this case
+                      console.log("No such document!");
+                     
+                     
+                      db.collection("AllProjects").doc(project_title).set({
+                      title: project_title,
+                  })
+                  .then(() => {
+                      console.log("Document successfully written!");
+                  })
+                  .catch((error) => {
+                      console.error("Error writing document: ", error);
+                  });
+
+
+                  db.collection('teachers').doc(email).collection('course').doc(select_ct).collection('projects').doc(project_title).set({
+                    project_title: project_title,
+          
+                }).then(()=>{
+                    location.reload();
+                })
+                $('#exampleModalproject').modal('hide');
+                  }
+              }).catch((error) => {
+                  console.log("Error getting document:", error);
+              });
+
+                
+              
+                  
+            
+    
+
+          }
+
+
+    function viewLesson(lesson_title) {
+      console.log(lesson_title);
+      sessionStorage.setItem("lesson_title", lesson_title);
+      var lesson_title = sessionStorage.getItem('lesson_title');
+
+      var docRef2 = db.collection("teachers").doc(email).collection("course").doc(course_title).collection("lessons").where("lesson_title", "==", lesson_title);
+      docRef2.get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            console.log(doc.id, " => ", doc.data());
+            document.getElementById("lessontitle").innerHTML = doc.data().lesson_title;
+
+            document.getElementById("lessonDescription").innerHTML = doc.data().lesson_discription;
+            var link = document.getElementById("lessonLink");
+            var str = doc.data().lesson_link;
+            var res = str.split("=");
+            var str1 = "https://www.youtube.com/embed/";
+            var final_link = str1.concat(res[1]);
+            link.setAttribute("src", final_link)
+          });
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+    }
+
+    function updateProfile() {
+      var lesson_title = sessionStorage.getItem('lesson_title');
+      db.collection("teachers").doc(email).collection('course').doc(course_title).collection("lessons").doc(lesson_title).set({
+        lesson_title: lesson_title,
+        lesson_discription: document.getElementById("edit_lesson_discription").value,
+        lesson_link: document.getElementById("edit_lesson_link").value,
+      })
+        .then(() => {
+          console.log("Document successfully written!");
+          location.reload();
+
+        })
+        .catch((error) => {
+          console.error("Error writing document: ", error);
+        });
+
+    }
+
+    function deleteLesson(lesson_title) {
+
+      console.log(email);
+      console.log(course_title);
+      console.log(lesson_title);
+      db.collection("teachers").doc(email).collection('course').doc(course_title).collection("lessons").doc(lesson_title).delete().then(() => {
+        console.log("Document successfully deleted!");
+        location.reload();
+      }).catch((error) => {
+        console.error("Error removing document: ", error);
+      });
+    }
+
+
+
+    function goToBlockly(project_title)
+         {
+           sessionStorage.setItem("project_title",project_title);
+          console.log(project_title);
+           window.location.href="blockly/Main Project/public/public/blockly/demos/code - Copy/index1.html";
+         } 
+
+
+
+    function deleteProject(project_title) {
+
+      console.log(email);
+      console.log(course_title);
+      console.log(project_title);
+      db.collection("teachers").doc(email).collection('course').doc(course_title).collection("projects").doc(project_title).delete().then(() => {
+        console.log("Document successfully deleted!");
+        location.reload();
+      }).catch((error) => {
+        console.error("Error removing document: ", error);
+      });
+      }
+
+
+    function deleteProject1(project_title) {
+
+      console.log(email);
+      console.log(course_title);
+      console.log(project_title);
+      db.collection("teachers").doc(email).collection('course').doc(course_title).collection("projects").doc(project_title).delete().then(() => {
+        console.log("Document successfully deleted!");
+        location.reload();
+      }).catch((error) => {
+        console.error("Error removing document: ", error);
+      });
+      }
+
+    //studentList()
+
+    function studentList() {
+      sessionStorage.setItem("studentListCourseTitle", course_title);
+      window.location.href = "enrolled_studentList.html";
+    }
+
+
+    function updateCourse() {
+
+      db.collection("teachers").doc(email).collection('course').doc(course_title).set({
+        course_title: course_title,
+        course_discription: document.getElementById("edit_course_discription").value,
+      })
+        .then(() => {
+          console.log("Document successfully written!");
+          location.reload();
+
+        })
+        .catch((error) => {
+          console.error("Error writing document: ", error);
+        });
+
+    }
+
+    function deleteCourse(course_title) {
+
+      console.log(email);
+      console.log(course_title);
+      
+      db.collection("teachers").doc(email).collection('course').doc(course_title).delete().then(() => {
+        console.log("Document successfully deleted!");
+        window.location.replace('course_list.html')
+      }).catch((error) => {
+        console.error("Error removing document: ", error);
+      });
+    }
+
+    
+
+
+
+    function signOut() {
+      firebase.auth().signOut();
+      window.location.replace('login.html');
+    }
+
+
+
+  </script>
+</body>
+
+</html>

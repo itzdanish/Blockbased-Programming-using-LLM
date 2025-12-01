@@ -1,0 +1,20 @@
+#nav_text{
+    color: white;
+}
+
+#navbar-home{
+    background-color:black;
+}
+#home{
+    height: 30px;
+    color: white; 
+    margin-left: 50px;
+}
+#nav-list{
+    padding-right: 60px;
+}
+.box{
+    height: 750px;
+    border-radius: 20px;
+    border: 1px solid lightgray;
+}

@@ -1,0 +1,67 @@
+#nav_text{
+    color: white;
+}
+
+
+#home{
+    height: 20px;
+    color: white;
+    margin-left: 50px;
+}
+#nav-list{
+    padding-right: 60px;
+}
+.box{
+    height: 350px;
+    border-radius: 20px;
+    border: 1px solid lightgray;
+}
+#text{
+    padding-left: 10px;
+}
+#start-button{
+    border-radius: 20px;
+}
+.img-box{
+    height: 250px;
+    border-radius: 20px;
+    border: 1px solid lightgray;   
+}
+#card-1{
+    margin-left: 30px;
+    height: 200px;
+    border-radius: 20px;
+    border: 1px solid lightgray;
+    background-image: url(../assets/software-testing-training-course.png);
+    background-size: 200px;
+}
+#course-title{
+    text-align: center;
+    margin-top: -10px;
+    font-weight: bold;
+}
+
+#text-1{
+    padding-left: 30px;
+    
+}
+div.scrollmenu {
+    height: 350px;
+    border-radius: 20px;
+    border: 1px solid lightgray;
+    overflow-x: auto;
+    white-space: nowrap;    
+  }
+
+
+  
+  div.scrollmenu a {
+    display: inline-block;
+    text-align: center;
+    padding: 14px;
+    text-decoration: none;
+  }
+  
+  div.scrollmenu a:hover {
+    background-color: #777;
+  }

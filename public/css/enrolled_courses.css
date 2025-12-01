@@ -1,0 +1,14 @@
+#navbar-home{
+    background-color:black;
+}
+#home{
+    padding-left: 30px;
+}
+#nav-list{
+    padding-right: 60px;
+}
+.box{
+    height: 750px;
+    border-radius: 20px;
+    border: 1px solid lightgray;
+}

@@ -1,0 +1,301 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly — Multi-language Workspace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Site CSS -->
+  <link rel="stylesheet" href="../css/styles.css">
+
+  <!-- Blockly CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/blockly/blockly.min.css">
+
+  <style>
+    body, html { height:100%; margin:0; display:flex; flex-direction:column; }
+    #topbar { background:#343a40; color:white; padding:8px 12px; display:flex; align-items:center; gap:12px; height:48px;}
+    #workspaceArea { flex:1; display:flex; height: calc(100vh - 48px); overflow:hidden; }
+    #blocklyDiv { flex:1; height:100%; }
+    #sidepanel { width:380px; padding:12px; background:#fafafa; border-left:1px solid #ddd; overflow:auto; box-sizing:border-box; }
+    button{ margin:6px 0; width:100%; }
+    .tabs { display:flex; gap:4px; margin-bottom:8px; }
+    .tab { padding:6px 8px; background:#eee; border-radius:4px; cursor:pointer; user-select:none; }
+    .tab.active { background:#007bff; color:white; }
+    pre { background:#0f0f0f; color:#0f0; padding:8px; max-height:260px; overflow:auto; white-space:pre-wrap; word-break:break-word; }
+    .codeBox { display:none; }
+    .codeBox.active { display:block; }
+    .small { font-size:0.9em; color:#666; }
+  </style>
+
+  <!-- Blockly -->
+  <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
+</head>
+
+<body>
+  <div id="topbar">
+    <a href="../dashboard_stud.html" style="color:white; text-decoration:none;">← Back</a>
+    <div style="flex:1">Blockly Workspace — <span id="projectTitle">Project</span></div>
+    <div id="userEmail" style="font-size:0.9em"></div>
+  </div>
+
+  <div id="workspaceArea">
+    <div id="blocklyDiv"></div>
+
+    <div id="sidepanel">
+      <h4 id="titleInst">Instructions</h4>
+      <div id="instructions" class="small">Loading...</div>
+      <hr/>
+
+      <button id="btnLoad">Load Saved Work</button>
+      <button id="btnSave">Save Progress</button>
+      <button id="btnSubmit">Submit for Review</button>
+
+      <hr/>
+
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <strong>Generated Code</strong>
+        <small class="small">Switch language</small>
+      </div>
+
+      <div class="tabs" id="tabs">
+        <div class="tab active" data-lang="javascript">JavaScript</div>
+        <div class="tab" data-lang="python">Python</div>
+        <div class="tab" data-lang="java">Java</div>
+        <div class="tab" data-lang="c">C</div>
+        <div class="tab" data-lang="cpp">C++</div>
+      </div>
+
+      <div id="codeAreas">
+        <pre id="code_js" class="codeBox active"></pre>
+        <pre id="code_py" class="codeBox"></pre>
+        <pre id="code_java" class="codeBox"></pre>
+        <pre id="code_c" class="codeBox"></pre>
+        <pre id="code_cpp" class="codeBox"></pre>
+      </div>
+
+      <hr/>
+      <div><strong>Submission Status</strong></div>
+      <div id="submissionStatus" class="small">—</div>
+      <hr/>
+      <div class="small">Notes: Generated C/C++/Java is auto-wrapped in a main() shell. For advanced language features, consider adding custom generators later.</div>
+    </div>
+  </div>
+
+<script>
+/* -------------------- Firebase -------------------- */
+var fbCfg = window.firebaseConfig || {
+  apiKey: "AIzaSyBTNIg29kbCt-GhFenHNZa34Xkl8M4k8cw",
+  authDomain: "block-5acdc.firebaseapp.com",
+  projectId: "block-5acdc",
+  storageBucket: "block-5acdc.appspot.com",
+  messagingSenderId: "57460143611",
+  appId: "1:57460143611:web:3efd4e65ab5898b59fc75e",
+  measurementId: "G-31XZGSV3WT"
+};
+if(!firebase.apps.length) firebase.initializeApp(fbCfg);
+var db = firebase.firestore();
+
+/* -------------------- Blockly init -------------------- */
+Blockly.assetUrl = function(path){ return "https://unpkg.com/blockly/media/" + path; };
+
+var workspace = Blockly.inject('blocklyDiv', {
+  toolbox: `<xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display:none">
+    <category name="Logic" colour="%{BKY_LOGIC_HUE}">
+      <block type="controls_if"></block>
+      <block type="logic_compare"></block>
+      <block type="logic_boolean"></block>
+    </category>
+    <category name="Loops" colour="%{BKY_LOOPS_HUE}">
+      <block type="controls_repeat_ext"></block>
+      <block type="controls_for"></block>
+      <block type="controls_whileUntil"></block>
+    </category>
+    <category name="Math" colour="%{BKY_MATH_HUE}">
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>
+      <block type="math_single"></block>
+    </category>
+    <category name="Variables" colour="%{BKY_VARIABLES_HUE}" custom="VARIABLE"></category>
+    <category name="Text" colour="%{BKY_TEXTS_HUE}">
+      <block type="text"></block>
+      <block type="text_print"></block>
+    </category>
+  </xml>`
+});
+
+/* -------------------- Project title from query or session -------------------- */
+function getQueryParam(name) { return new URLSearchParams(window.location.search).get(name); }
+var projectTitle = getQueryParam('project_title') || sessionStorage.getItem('project_title') || 'UnknownProject';
+document.getElementById('projectTitle').innerText = projectTitle;
+
+/* -------------------- Language tabs -------------------- */
+var tabs = document.getElementById('tabs');
+tabs.addEventListener('click', function(e){
+  var t = e.target;
+  if(!t.classList.contains('tab')) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  var lang = t.dataset.lang;
+  document.querySelectorAll('.codeBox').forEach(cb => cb.classList.remove('active'));
+  document.getElementById('code_' + (lang==='cpp'?'cpp': (lang==='java'?'java': (lang==='c'?'c': (lang==='python'?'py':'js')) ))).classList.add('active');
+});
+
+/* -------------------- Code generation helpers -------------------- */
+
+function generateJavaScript(){
+  try { return Blockly.JavaScript.workspaceToCode(workspace) || "// (no code)"; }
+  catch(e){ console.error(e); return "// JS generator unavailable"; }
+}
+
+function generatePython(){
+  // Use Blockly Python if available, else attempt a simple fallback
+  try {
+    if (Blockly.Python) return Blockly.Python.workspaceToCode(workspace) || "# (no code)";
+  } catch(e){ console.warn("Python generator error", e); }
+  // fallback: convert JS to python-ish (simple)
+  let js = generateJavaScript();
+  // naive replacements: console.log -> print, ; -> newlines
+  let py = js.replace(/console\.log\s*\(/g, "print(");
+  py = py.replace(/;/g, "\n");
+  return py;
+}
+
+/* Convert JS-ish code to Java main wrapper */
+function jsToJava(js){
+  // Replace console.log -> System.out.println
+  let body = js.replace(/console\.log\s*\(/g, "System.out.println(");
+  // remove trailing semicolons, ensure newlines
+  body = body.split(';').map(s=>s.trim()).filter(s=>s.length>0).map(s=>s + ';').join('\n  ');
+  // wrap
+  let classText = `public class Main {\n  public static void main(String[] args) {\n  ${body}\n  }\n}\n`;
+  return classText;
+}
+
+/* Convert JS-ish to C program */
+function jsToC(js){
+  // console.log -> printf("%s\n", <expr>);
+  let body = js.replace(/console\.log\s*\(([\s\S]*?)\);?/g, function(_, expr){
+    // naive: wrap expression with %s; the expression might need formatting, we'll just print expression as is
+    return 'printf("%s\\n", ' + expr.trim() + ');';
+  });
+  body = body.split(';').map(s=>s.trim()).filter(s=>s.length>0).map(s=>s + ';').join('\n  ');
+  let prog = `#include <stdio.h>\n\nint main() {\n  ${body}\n  return 0;\n}\n`;
+  return prog;
+}
+
+/* Convert JS-ish to C++ */
+function jsToCpp(js){
+  let body = js.replace(/console\.log\s*\(([\s\S]*?)\);?/g, function(_, expr){
+    return 'std::cout << ' + expr.trim() + ' << std::endl;';
+  });
+  body = body.split(';').map(s=>s.trim()).filter(s=>s.length>0).map(s=>s + ';').join('\n  ');
+  let prog = `#include <iostream>\nusing namespace std;\n\nint main() {\n  ${body}\n  return 0;\n}\n`;
+  return prog;
+}
+
+/* Generate all languages and update UI */
+function updateAllCodeDisplays(){
+  const js = generateJavaScript();
+  const py = generatePython();
+  const java = jsToJava(js);
+  const c = jsToC(js);
+  const cpp = jsToCpp(js);
+
+  document.getElementById('code_js').innerText = js;
+  document.getElementById('code_py').innerText = py;
+  document.getElementById('code_java').innerText = java;
+  document.getElementById('code_c').innerText = c;
+  document.getElementById('code_cpp').innerText = cpp;
+}
+workspace.addChangeListener(function(){ updateAllCodeDisplays(); });
+
+/* -------------------- Auth & load instructions/status -------------------- */
+firebase.auth().onAuthStateChanged(function(user){
+  if(!user){ alert('Please login'); window.location.href = '../login.html'; return; }
+  document.getElementById('userEmail').innerText = user.email;
+  loadProjectInstructions();
+  loadSubmissionStatus(user.email);
+});
+
+/* Load instructions from teacher project or AllProjects fallback */
+async function loadProjectInstructions(){
+  const teacherEmail = sessionStorage.getItem('teacher_email') || '';
+  const courseTitle = sessionStorage.getItem('course_title') || '';
+  try {
+    if (teacherEmail && courseTitle){
+      let ref = db.collection('teachers').doc(teacherEmail).collection('course').doc(courseTitle).collection('projects').doc(projectTitle);
+      let d = await ref.get();
+      if (d.exists) { document.getElementById('instructions').innerText = d.data().instructions || d.data().project_title || 'No instructions.'; return; }
+    }
+    let all = await db.collection('AllProjects').doc(projectTitle).get();
+    if (all.exists) { document.getElementById('instructions').innerText = all.data().description || 'No instructions.'; return; }
+    document.getElementById('instructions').innerText = 'No instructions found.';
+  } catch(e){ console.error(e); document.getElementById('instructions').innerText = 'Error loading instructions.'; }
+}
+
+/* -------------------- Save / Load / Submit -------------------- */
+document.getElementById('btnSave').addEventListener('click', async function(){
+  let user = firebase.auth().currentUser; if(!user) return alert('Sign in first');
+  let email = user.email;
+  let xml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
+  let code = generateJavaScript();
+  await db.collection('students').doc(email).collection('ProjectSaves').doc(projectTitle).set({
+    workspace_xml: xml, code: code, lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  alert('Saved.');
+});
+
+document.getElementById('btnLoad').addEventListener('click', async function(){
+  let user = firebase.auth().currentUser; if(!user) return alert('Sign in first');
+  let email = user.email;
+  let doc = await db.collection('students').doc(email).collection('ProjectSaves').doc(projectTitle).get();
+  if(!doc.exists) return alert('No saved work.');
+  let xml = Blockly.Xml.textToDom(doc.data().workspace_xml);
+  Blockly.Xml.domToWorkspace(xml, workspace);
+  alert('Loaded saved work.');
+});
+
+document.getElementById('btnSubmit').addEventListener('click', async function(){
+  let user = firebase.auth().currentUser; if(!user) return alert('Sign in first');
+  if(!confirm('Submit for review? This will create a submission record.')) return;
+
+  let email = user.email;
+  let xml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
+  let code = generateJavaScript();
+
+  // versioned history
+  let subRef = db.collection('students').doc(email).collection('ProjectSubmissions').doc(projectTitle);
+  let historyRef = subRef.collection('history').doc();
+  await historyRef.set({
+    workspace_xml: xml, code: code, submittedAt: firebase.firestore.FieldValue.serverTimestamp(), status: 'submitted'
+  });
+
+  await subRef.set({
+    latestHistoryId: historyRef.id,
+    workspace_xml: xml, code: code, submittedAt: firebase.firestore.FieldValue.serverTimestamp(), status: 'submitted'
+  });
+
+  alert('Submitted for review.');
+  loadSubmissionStatus(email);
+});
+
+/* Load submission status */
+async function loadSubmissionStatus(email){
+  try {
+    let d = await db.collection('students').doc(email).collection('ProjectSubmissions').doc(projectTitle).get();
+    if(!d.exists){ document.getElementById('submissionStatus').innerText = 'No submission yet.'; return; }
+    let data = d.data();
+    document.getElementById('submissionStatus').innerText = `Status: ${data.status||'-'}; Score: ${data.score ?? '-'}; Feedback: ${data.feedback ?? '-'}`;
+  } catch(e){ console.error(e); document.getElementById('submissionStatus').innerText = 'Error loading status.'; }
+}
+
+/* initialize view */
+updateAllCodeDisplays();
+</script>
+</body>
+</html>

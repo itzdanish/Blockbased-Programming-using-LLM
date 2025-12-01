@@ -1,0 +1,41 @@
+body{
+    padding-top:2.2rem;
+    padding-bottom:4.2rem;    
+    }
+
+#back_arrow{
+    color: black;      
+} 
+
+.myform{
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 1rem;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 2rem;
+    outline: 0;
+    max-width: 500px;
+}
+
+#login{
+    border-radius: 1px solid #565656;
+    background-color: #565656;
+    color: white;
+    border-radius: 25px;
+    font-size: 20px;
+}
+    
+#forgot_pass{
+    color: black;
+}   
+
+#line{
+    background-color: lightgray;
+}

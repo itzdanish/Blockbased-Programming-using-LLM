@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Submitted Codes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
+
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyBTNIg29kbCt-GhFenHNZa34Xkl8M4k8cw",
+            authDomain: "block-5acdc.firebaseapp.com",
+            projectId: "block-5acdc",
+            storageBucket: "block-5acdc.appspot.com",
+            messagingSenderId: "57460143611",
+            appId: "1:57460143611:web:3efd4e65ab5898b59fc75e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+    </script>
+
+    <style>
+        .container-box {
+            background: white;
+            padding: 25px;
+            margin-top: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,.15);
+        }
+        pre {
+            background: #1e1e1e;
+            color: #00eaff;
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+        .clickable {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+
+</head>
+
+<body class="bg-light">
+
+    <div class="container container-box">
+        <h2 id="titleText" class="mb-4">Submitted Code List</h2>
+
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Student Email</th>
+                    <th>Submitted At</th>
+                    <th>View Code</th>
+                    <th>Download</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody id="submissionTable"></tbody>
+        </table>
+    </div>
+
+    <!-- VIEW CODE MODAL -->
+    <div class="modal fade" id="codeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 id="modalStudentName" class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+                    <pre id="modalCode"></pre>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- GRADING MODAL -->
+    <div class="modal fade" id="gradeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Grade Submission</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+                    <p><strong>Student:</strong> <span id="gradeStudentEmail"></span></p>
+
+                    <p><strong>Submitted Code:</strong></p>
+                    <pre id="gradeCodeBlock"></pre>
+
+                    <div class="form-group">
+                        <label><b>Marks</b></label>
+                        <input type="number" class="form-control" id="gradeMarks" placeholder="Enter marks">
+                    </div>
+
+                    <div class="form-group">
+                        <label><b>Feedback</b></label>
+                        <textarea id="gradeFeedback" class="form-control" rows="4"
+                            placeholder="Enter feedback for student"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-success" onclick="saveGrade()">Save Grade</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- BOOTSTRAP JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let projectTitle = sessionStorage.getItem("submitted_project_title");
+        let teacherEmail = null;
+
+        firebase.auth().onAuthStateChanged(function(user){
+            if (user) teacherEmail = user.email;
+        });
+
+        document.getElementById("titleText").innerText = "Submissions for: " + projectTitle;
+
+        function loadSubmissions() {
+            db.collection("students").get().then(snapshot => {
+                let i = 1;
+
+                snapshot.forEach(studentDoc => {
+                    let email = studentDoc.id;
+
+                    db.collection("students")
+                        .doc(email)
+                        .collection("ProjectSubmissions")
+                        .doc(projectTitle)
+                        .get()
+                        .then(subDoc => {
+
+                            if (subDoc.exists) {
+                                let data = subDoc.data();
+
+                                let time = data.submitted_at
+                                    ? new Date(data.submitted_at.toDate()).toLocaleString()
+                                    : "Not recorded";
+
+                                // Grade button logic
+                                let gradeBtn = "";
+                                if (data.marks !== undefined) {
+                                    gradeBtn = `<span class="badge badge-success">Graded ✓</span>`;
+                                } else {
+                                    gradeBtn = `
+                                        <button class="btn btn-warning btn-sm"
+                                            onclick="openGradePanel('${email}')">
+                                            Grade
+                                        </button>`;
+                                }
+
+                                let row = `
+                                    <tr>
+                                        <td>${i++}</td>
+                                        <td>${email}</td>
+                                        <td>${time}</td>
+                                        <td><span class="clickable" onclick="viewCode('${email}')">View</span></td>
+                                        <td><button class="btn btn-success btn-sm" onclick="downloadCode('${email}')">Download</button></td>
+                                        <td>${gradeBtn}</td>
+                                    </tr>
+                                `;
+
+                                document.getElementById("submissionTable").innerHTML += row;
+                            }
+
+                        });
+
+                });
+            });
+        }
+
+        function viewCode(email) {
+            db.collection("students")
+                .doc(email)
+                .collection("ProjectSubmissions")
+                .doc(projectTitle)
+                .get()
+                .then(doc => {
+                    let data = doc.data();
+                    document.getElementById("modalStudentName").innerText = "Submitted by: " + email;
+                    document.getElementById("modalCode").innerText = data.code || "No code submitted.";
+
+                    $("#codeModal").modal("show");
+                });
+        }
+
+        let gradingEmail = null;
+
+        function openGradePanel(email) {
+            gradingEmail = email;
+
+            db.collection("students")
+                .doc(email)
+                .collection("ProjectSubmissions")
+                .doc(projectTitle)
+                .get()
+                .then(doc => {
+                    let data = doc.data();
+
+                    document.getElementById("gradeStudentEmail").innerText = email;
+                    document.getElementById("gradeCodeBlock").innerText = data.code || "No code provided.";
+                    document.getElementById("gradeMarks").value = data.marks || "";
+                    document.getElementById("gradeFeedback").value = data.feedback || "";
+
+                    $("#gradeModal").modal("show");
+                });
+        }
+
+        function saveGrade() {
+            let marks = document.getElementById("gradeMarks").value;
+            let feedback = document.getElementById("gradeFeedback").value;
+
+            if (!marks) {
+                alert("Please enter marks.");
+                return;
+            }
+
+            db.collection("students")
+                .doc(gradingEmail)
+                .collection("ProjectSubmissions")
+                .doc(projectTitle)
+                .update({
+                    marks: Number(marks),
+                    feedback: feedback,
+                    graded_at: firebase.firestore.FieldValue.serverTimestamp(),
+                    graded_by: teacherEmail
+                })
+                .then(() => {
+                    $("#gradeModal").modal("hide");
+                    alert("Grade saved!");
+                    location.reload();
+                });
+        }
+
+        function downloadCode(email) {
+            db.collection("students")
+                .doc(email)
+                .collection("ProjectSubmissions")
+                .doc(projectTitle)
+                .get()
+                .then(doc => {
+                    let data = doc.data();
+                    let code = data.code || "";
+
+                    let blob = new Blob([code], { type: "text/plain" });
+                    let a = document.createElement("a");
+                    a.href = URL.createObjectURL(blob);
+                    a.download = email + "-" + projectTitle + ".txt";
+                    a.click();
+                });
+        }
+
+        loadSubmissions();
+    </script>
+
+</body>
+
+</html>

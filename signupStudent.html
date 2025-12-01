@@ -1,86 +1,307 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Blocky — Student Sign Up</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      body { background: #f4f6f8; font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-      .card-auth { max-width: 560px; margin: 40px auto; border-radius: 12px; box-shadow: 0 6px 18px rgba(20,30,50,0.08); }
-      .google-btn { background:#fff; border:1px solid #e3e6ea; color:#202124; }
-      .google-logo { height:18px; width:18px; margin-right:10px; }
-      .btn-primary { background: #1a73e8; border-color: #1a73e8; }
-    </style>
-    <!-- Firebase SDKs (v8) -->
-    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
-  </head>
-  <body>
-    <div class="card card-auth p-4">
-      <div class="card-body">
-        <h3 class="card-title text-center mb-2">Create a Student account</h3>
-        <p class="text-center text-muted mb-4">Sign up to access courses and Blockly projects</p>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blockly — Student Sign Up (OTP Verified)</title>
 
-        <div class="row g-3">
-          <div class="col-12">
-            <label class="form-label">Full name</label>
-            <input id="stuName" class="form-control form-control-lg" placeholder="Your full name">
-          </div>
-          <div class="col-12">
-            <label class="form-label">Email</label>
-            <input id="stuEmail" type="email" class="form-control form-control-lg" placeholder="you@example.com">
-          </div>
-          <div class="col-6">
-            <label class="form-label">Password</label>
-            <input id="stuPassword" type="password" class="form-control form-control-lg" placeholder="Create password">
-          </div>
-          <div class="col-6">
-            <label class="form-label">Confirm</label>
-            <input id="stuPasswordConfirm" type="password" class="form-control form-control-lg" placeholder="Confirm password">
-          </div>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f4f6f8; font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    .card-auth { max-width: 560px; margin: 40px auto; border-radius: 12px; box-shadow: 0 6px 18px rgba(20,30,50,0.08); }
+    .google-btn { background:#fff; border:1px solid #e3e6ea; color:#202124; }
+    .google-logo { height:18px; width:18px; margin-right:10px; }
+    .btn-primary { background: #1a73e8; border-color: #1a73e8; }
+    .field-error { color: #dc3545; font-size: 0.85rem; margin-top: 6px; }
+    .muted-small { font-size: 0.9rem; color: #6c757d; }
+  </style>
 
-          <div class="col-12 d-grid">
-            <button id="btnStuSignup" class="btn btn-primary btn-lg">Create student account</button>
-          </div>
+  <!-- Firebase SDKs (v8) -->
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
+</head>
 
-          <div class="col-12 text-center text-muted">or</div>
+<body>
+  <div class="card card-auth p-4">
+    <div class="card-body">
+      <h3 class="card-title text-center mb-2">Create a Student account</h3>
+      <p class="text-center muted-small mb-4">Sign up to access courses and Blockly projects</p>
 
-          <div class="col-12 d-grid">
-            <button id="googleSignInStuBtn" class="btn google-btn btn-lg">
-              <img class="google-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><path fill='%23EA4335' d='M24 9.5c3.94 0 7.17 1.35 9.34 3.14l7-6.86C36.56 2.87 30.7 0 24 0 14.62 0 6.99 5.2 2.98 12.84l8.12 6.3C13.66 13.2 18.38 9.5 24 9.5z'/><path fill='%234285F4' d='M46.45 24.5c0-1.6-.14-2.8-.44-4.03H24v8.06h12.8c-.55 3.02-2.35 5.6-5.02 7.34l7.66 5.92C42.78 38.4 46.45 32.78 46.45 24.5z'/><path fill='%23FBBC05' d='M10.99 29.14A14.9 14.9 0 0 1 9.5 24.5c0-1.65.3-3.24.86-4.7L2.24 13.5C.82 16.29 0 19.33 0 24.5c0 5.24.82 8.99 2.24 11.99l8.75-6.35z'/><path fill='%2341B169' d='M24 48c6.7 0 12.56-2.22 16.8-6.03l-7.66-5.92C31.2 36.6 27.98 38 24 38c-5.62 0-10.34-3.7-12.68-8.84L2.98 36.84C6 44.8 14.62 48 24 48z'/></svg>" />
-              Sign up with Google
-            </button>
-          </div>
-
-          <div class="col-12 text-center small text-muted">
-            Already have an account? <a href="login.html">Sign in</a>
-          </div>
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label">Full name</label>
+          <input id="stuName" class="form-control form-control-lg" placeholder="Your full name">
+          <div id="errName" class="field-error" aria-live="polite"></div>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Email</label>
+          <input id="stuEmail" type="email" class="form-control form-control-lg" placeholder="you@example.com">
+          <div id="errEmail" class="field-error" aria-live="polite"></div>
+        </div>
+        <div class="col-6">
+          <label class="form-label">Password</label>
+          <input id="stuPassword" type="password" class="form-control form-control-lg" placeholder="Create password">
+          <div id="errPassword" class="field-error" aria-live="polite"></div>
+        </div>
+        <div class="col-6">
+          <label class="form-label">Confirm</label>
+          <input id="stuPasswordConfirm" type="password" class="form-control form-control-lg" placeholder="Confirm password">
+          <div id="errPasswordConfirm" class="field-error" aria-live="polite"></div>
         </div>
 
+        <div class="col-12 d-grid">
+          <button id="btnStuSignup" class="btn btn-primary btn-lg">Create student account</button>
+        </div>
+
+        <div class="col-12 text-center muted-small">or</div>
+
+        <div class="col-12 d-grid">
+          <button id="googleSignInStuBtn" class="btn google-btn btn-lg">
+            <img class="google-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><path fill='%23EA4335' d='M24 9.5c3.94 0 7.17 1.35 9.34 3.14l7-6.86C36.56 2.87 30.7 0 24 0 14.62 0 6.99 5.2 2.98 12.84l8.12 6.3C13.66 13.2 18.38 9.5 24 9.5z'/><path fill='%234285F4' d='M46.45 24.5c0-1.6-.14-2.8-.44-4.03H24v8.06h12.8c-.55 3.02-2.35 5.6-5.02 7.34l7.66 5.92C42.78 38.4 46.45 32.78 46.45 24.5z'/><path fill='%23FBBC05' d='M10.99 29.14A14.9 14.9 0 0 1 9.5 24.5c0-1.65.3-3.24.86-4.7L2.24 13.5C.82 16.29 0 19.33 0 24.5c0 5.24.82 8.99 2.24 11.99l8.75-6.35z'/><path fill='%2341B169' d='M24 48c6.7 0 12.56-2.22 16.8-6.03l-7.66-5.92C31.2 36.6 27.98 38 24 38c-5.62 0-10.34-3.7-12.68-8.84L2.98 36.84C6 44.8 14.62 48 24 48z'/></svg>" />
+            Sign up with Google
+          </button>
+        </div>
+
+        <div class="col-12 text-center small muted-small">
+          Already have an account? <a href="login.html">Sign in</a>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- Shared auth script -->
-    <script src="firebase-auth.js"></script>
-    <script>
-      document.getElementById('btnStuSignup').addEventListener('click', function(){
-        const name = document.getElementById('stuName').value.trim();
-        const email = document.getElementById('stuEmail').value.trim();
-        const pw = document.getElementById('stuPassword').value;
-        const pwc = document.getElementById('stuPasswordConfirm').value;
-        if (!name) return alert('Enter your full name');
-        if (!email) return alert('Enter your email');
-        if (!pw || pw.length < 6) return alert('Password must be at least 6 characters');
-        if (pw !== pwc) return alert('Passwords do not match');
-        window.FirebaseAuthApp.emailPasswordSignup(name, email, pw, 'Student');
-      });
+  <!-- OTP Modal (kept, but errors inline under otp field) -->
+  <div class="modal fade" id="otpModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content p-3">
+        <div class="modal-header">
+          <h5 class="modal-title">Verify your email</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="muted-small">We sent a 6-digit code to <span id="otpSentTo"></span>. It expires in 5 minutes.</p>
+          <input id="otpInput" class="form-control mb-2" maxlength="6" placeholder="Enter 6-digit code">
+          <div id="errOtp" class="field-error" aria-live="polite"></div>
 
-      document.getElementById('googleSignInStuBtn').addEventListener('click', function(){
+          <div class="d-flex gap-2 mt-2">
+            <button id="verifyOtpBtn" class="btn btn-primary flex-grow-1">Verify & Create Account</button>
+            <button id="resendOtpBtn" class="btn btn-outline-secondary">Resend</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Your shared auth script (if you have one) -->
+  <script src="firebase-auth.js"></script>
+
+  <script>
+    // CONFIG: Replace with your Firebase config block if not initialized in firebase-auth.js
+    // firebase.initializeApp({...});
+
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const otpModal = new bootstrap.Modal(document.getElementById("otpModal"));
+
+    let otpForEmail = null;
+    let signupData = null;
+    const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
+    const CLOUD_FUNCTION_URL = "https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/sendOtpEmail";
+    const OTP_API_KEY = "YOUR_OTP_KEY"; // Replace with your configured key
+
+    function generateOtp() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    function docIdForEmail(email) {
+      return encodeURIComponent(email);
+    }
+
+    // Validation helpers (Option 1: show only first error per field)
+    function clearErrors() {
+      document.getElementById('errName').textContent = '';
+      document.getElementById('errEmail').textContent = '';
+      document.getElementById('errPassword').textContent = '';
+      document.getElementById('errPasswordConfirm').textContent = '';
+      document.getElementById('errOtp').textContent = '';
+    }
+
+    function validateName(name) {
+      if (!name) return 'Please enter your full name.';
+      return '';
+    }
+
+    function validateEmailBasic(email) {
+      if (!email) return 'Please enter your email.';
+      // basic email regex
+      const re = /^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
+      if (!re.test(email)) return 'Please enter a valid email address.';
+      return '';
+    }
+
+    function validatePassword(pw) {
+      if (!pw) return 'Please enter a password.';
+      if (pw.length < 6) return 'Password must be at least 6 characters.';
+      return '';
+    }
+
+    function validatePasswordConfirm(pw, pwc) {
+      if (!pwc) return 'Please confirm your password.';
+      if (pw !== pwc) return 'Passwords do not match.';
+      return '';
+    }
+
+    async function emailAlreadyRegistered(email) {
+      const methods = await auth.fetchSignInMethodsForEmail(email);
+      return methods && methods.length > 0;
+    }
+
+    document.getElementById('btnStuSignup').addEventListener('click', async function() {
+      clearErrors();
+      const name = document.getElementById('stuName').value.trim();
+      const email = document.getElementById('stuEmail').value.trim();
+      const pw = document.getElementById('stuPassword').value;
+      const pwc = document.getElementById('stuPasswordConfirm').value;
+
+      // Field-level validation (first error only)
+      const nameErr = validateName(name);
+      if (nameErr) { document.getElementById('errName').textContent = nameErr; return; }
+
+      const emailErr = validateEmailBasic(email);
+      if (emailErr) { document.getElementById('errEmail').textContent = emailErr; return; }
+
+      const pwErr = validatePassword(pw);
+      if (pwErr) { document.getElementById('errPassword').textContent = pwErr; return; }
+
+      const pwcErr = validatePasswordConfirm(pw, pwc);
+      if (pwcErr) { document.getElementById('errPasswordConfirm').textContent = pwcErr; return; }
+
+      // Server-side check: ensure email isn't already registered
+      try {
+        const exists = await emailAlreadyRegistered(email);
+        if (exists) {
+          document.getElementById('errEmail').textContent = 'Email is already registered. Please sign in or reset your password.';
+          return;
+        }
+      } catch (err) {
+        console.error('Error checking sign-in methods', err);
+        document.getElementById('errEmail').textContent = 'Unable to verify email. Try again later.';
+        return;
+      }
+
+      // Save signup data locally until OTP verified
+      signupData = { name, email, pw };
+
+      // Create OTP, save to Firestore with timestamp
+      const otp = generateOtp();
+      otpForEmail = otp;
+      const docId = docIdForEmail(email);
+
+      try {
+        await db.collection('emailOtps').doc(docId).set({ otp, createdAt: Date.now() });
+      } catch (e) {
+        console.error('Failed to write OTP to Firestore', e);
+        document.getElementById('errEmail').textContent = 'Unable to request OTP. Try again later.';
+        return;
+      }
+
+      // Trigger Cloud Function to send email (protected by simple API key)
+      try {
+        await fetch(CLOUD_FUNCTION_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': OTP_API_KEY
+          },
+          body: JSON.stringify({ email, otp })
+        });
+      } catch (e) {
+        console.error('Failed to call cloud function', e);
+        // continue, user may still receive if function worked
+      }
+
+      document.getElementById('otpSentTo').textContent = email;
+      document.getElementById('otpInput').value = '';
+      document.getElementById('errOtp').textContent = 'OTP sent — check your email (spam/promotions folder).';
+      otpModal.show();
+    });
+
+    // Resend OTP
+    document.getElementById('resendOtpBtn').addEventListener('click', async function() {
+      document.getElementById('errOtp').textContent = '';
+      if (!signupData) { document.getElementById('errOtp').textContent = 'Start signup first.'; return; }
+      const email = signupData.email;
+      const otp = generateOtp(); otpForEmail = otp;
+      const docId = docIdForEmail(email);
+      try {
+        await db.collection('emailOtps').doc(docId).set({ otp, createdAt: Date.now() });
+        await fetch(CLOUD_FUNCTION_URL, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': OTP_API_KEY },
+          body: JSON.stringify({ email, otp })
+        });
+        document.getElementById('errOtp').textContent = 'OTP resent.';
+      } catch (err) {
+        console.error(err);
+        document.getElementById('errOtp').textContent = 'Failed to resend OTP. Try again later.';
+      }
+    });
+
+    // Verify OTP and create account
+    document.getElementById('verifyOtpBtn').addEventListener('click', async function() {
+      document.getElementById('errOtp').textContent = '';
+      const entered = document.getElementById('otpInput').value.trim();
+      if (!signupData) { document.getElementById('errOtp').textContent = 'No signup in progress.'; return; }
+      if (!entered) { document.getElementById('errOtp').textContent = 'Enter the 6-digit code.'; return; }
+      if (entered.length !== 6) { document.getElementById('errOtp').textContent = 'Code must be 6 digits.'; return; }
+
+      const docId = docIdForEmail(signupData.email);
+      try {
+        const doc = await db.collection('emailOtps').doc(docId).get();
+        if (!doc.exists) { document.getElementById('errOtp').textContent = 'No OTP found. Request a new code.'; return; }
+        const data = doc.data();
+        const age = Date.now() - data.createdAt;
+        if (age > OTP_EXPIRY_MS) { document.getElementById('errOtp').textContent = 'OTP expired. Please resend.'; return; }
+        if (data.otp !== entered) { document.getElementById('errOtp').textContent = 'Incorrect OTP.'; return; }
+
+        // OK - create the account
+        document.getElementById('errOtp').textContent = 'OTP verified — creating account...';
+        await auth.createUserWithEmailAndPassword(signupData.email, signupData.pw);
+
+        const user = auth.currentUser;
+        if (user) {
+          await user.updateProfile({ displayName: signupData.name });
+          // Save user doc
+          await db.collection('users').doc(user.uid).set({ name: signupData.name, email: signupData.email, role: 'Student', createdAt: Date.now() });
+        }
+
+        // cleanup
+        await db.collection('emailOtps').doc(docId).delete();
+        otpModal.hide();
+        // redirect
+        window.location.href = 'login.html';
+      } catch (err) {
+        console.error(err);
+        document.getElementById('errOtp').textContent = 'Error: ' + (err.message || err);
+      }
+    });
+
+    // Google signup unchanged
+    document.getElementById('googleSignInStuBtn').addEventListener('click', function(){
+      if (window.FirebaseAuthApp && typeof window.FirebaseAuthApp.signInWithGoogle === 'function') {
         window.FirebaseAuthApp.signInWithGoogle('Student');
-      });
-    </script>
-  </body>
+      } else {
+        console.warn('Google signin handler not found: window.FirebaseAuthApp.signInWithGoogle');
+      }
+    });
+
+    // Optional: live validation on blur (shows first error only)
+    document.getElementById('stuName').addEventListener('blur', function(){ document.getElementById('errName').textContent = validateName(this.value.trim()); });
+    document.getElementById('stuEmail').addEventListener('blur', function(){ document.getElementById('errEmail').textContent = validateEmailBasic(this.value.trim()); });
+    document.getElementById('stuPassword').addEventListener('blur', function(){ document.getElementById('errPassword').textContent = validatePassword(this.value); });
+    document.getElementById('stuPasswordConfirm').addEventListener('blur', function(){ document.getElementById('errPasswordConfirm').textContent = validatePasswordConfirm(document.getElementById('stuPassword').value, this.value); });
+
+  </script>
+</body>
 </html>

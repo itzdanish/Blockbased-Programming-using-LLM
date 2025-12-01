@@ -1,0 +1,6 @@
+var a;
+
+
+if (false) {
+  a = (typeof a === 'number' ? a : 0) + 1;
+}

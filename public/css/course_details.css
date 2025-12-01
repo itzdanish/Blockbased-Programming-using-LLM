@@ -1,0 +1,22 @@
+#nav_text{
+    color: white;
+}
+
+#home{
+    height: 35px;
+    color: white;
+    margin-left: 50px;
+}
+#nav-list{
+    padding-right: 60px;
+}
+#box{
+    height:750px;  
+    border: 1px solid lightgray;
+    margin-top: 50px;
+    margin-bottom: 40px;
+    overflow-y: auto;
+}
+#righttag{
+    text-align: right;
+}
