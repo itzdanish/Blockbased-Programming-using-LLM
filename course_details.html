@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>CourseDetails - Instructor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/course_details.css" />
-  <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" crossorigin="anonymous" />
   <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-analytics.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
-  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-  <style>
-    .modal-xl { max-width: 1100px; }
-    .btn-clean { border-radius: 6px !important; padding: 8px 12px !important; font-size: 0.9rem !important; }
-    .table td, .table th { vertical-align: middle !important; }
-  </style>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
+
   <script>
     var firebaseConfig = {
       apiKey: "AIzaSyBTNIg29kbCt-GhFenHNZa34Xkl8M4k8cw",
@@ -31,296 +30,578 @@
       measurementId: "G-31XZGSV3WT"
     };
     firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
     var db = firebase.firestore();
   </script>
+
+  <style>
+    .modal-xl { max-width: 1100px; }
+    .table td, .table th { vertical-align: middle !important; }
+  </style>
 </head>
+
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-dark " id="navbar-home">
-    <a class="navbar-brand" href="dashboard_teach.html"><i class="fa fa-home fa-2x" id="home"></i></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <a class="navbar-brand" href="dashboard_teach.html">
+      <i class="fa fa-home fa-2x"></i>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ml-auto" id="nav-list">
-        <li class="nav-item active"><button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text" href="coursecreator.html">Create</a></button></li>
-        <li class="nav-item active"><button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text" href="teach_my_projects.html">My Projects</a></button></li>
-        <li><img src="assets/prof.jpeg" alt="" height="45px" width="45px"></li>
+      <ul class="navbar-nav ml-auto">
+
+        <li class="nav-item">
+          <button class="btn btn-primary btn-sm mr-1" type="button">
+            <a class="nav-link" href="coursecreator.html">Create</a>
+          </button>
+        </li>
+
+        <li class="nav-item">
+          <button class="btn btn-primary btn-sm mr-1" type="button">
+            <a class="nav-link" href="teach_my_projects.html">My Projects</a>
+          </button>
+        </li>
+
+        <li><img src="assets/prof.jpeg" height="45" width="45"></li>
+
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" id="nav_text" data-toggle="dropdown"></a>
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown"></a>
           <div class="dropdown-menu dropdown-menu-right">
             <a class="dropdown-item" href="my_profile.html">My Profile</a>
             <a class="dropdown-item" href="course_list.html">View Courses</a>
-            <a class="dropdown-item" id="signOut" onclick="signOut()">Logout</a>
+            <a class="dropdown-item" onclick="signOut()">Logout</a>
           </div>
         </li>
       </ul>
     </div>
   </nav>
 
-  <div class="container">
-    <div class="row ">
-      <div data-spy="scroll" class="col-12 mt-md-5" id="box">
-        <h1 id="courseTitle" class=" m-md-3">Course_Title</h1>
-        <h5>Course code: </h5><b><div id="courseid" class="m-md-3">Course Id</div></b>
-        <div id="courseDescription" class="m-md-3"></div>
+  <!-- CONTENT -->
+  <div class="container mt-4">
 
-        <h3 style="text-align: left;">Project/Labs</h3>
+    <h1 id="courseTitle">Course Title</h1>
+    <h5>Course code:</h5>
+    <div id="courseid"></div>
+    <div id="courseDescription" class="mb-4"></div>
 
-        <table class="table table-bordered col-sm-10 ml-md-3">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>View Details</th>
-              <th>Edit / Add Details</th>
-              <th>Submitted Codes</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody id="course_table1"></tbody>
-        </table>
-
-      </div>
+    <!-- LESSONS -->
+    <div class="d-flex justify-content-between">
+      <h3>Lessons</h3>
+      <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createLessonModal">Create Lesson</button>
     </div>
+
+    <table class="table table-bordered mt-2">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>View</th>
+          <th>YouTube</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody id="lessonTable"></tbody>
+    </table>
+
+    <!-- PROJECTS -->
+    <div class="d-flex justify-content-between mt-4">
+      <h3>Projects / Labs</h3>
+      <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createProjectModal">Create Project / Lab</button>
+    </div>
+
+    <table class="table table-bordered mt-2">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>View</th>
+          <th>Edit</th>
+          <th>Submissions</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody id="projectTable"></tbody>
+    </table>
+
   </div>
 
-  <div class="modal fade" id="projectDetailsModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+  <!-- CREATE LESSON MODAL -->
+  <div class="modal fade" id="createLessonModal">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
+
         <div class="modal-header">
-          <h5 class="modal-title" id="projectDetailsTitle">Project Details</h5>
-          <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+          <h5>Create Lesson</h5>
+          <button class="close" data-dismiss="modal">&times;</button>
         </div>
+
         <div class="modal-body">
-          <p><strong>Description:</strong></p><div id="projectDetailsDescription" class="mb-3"></div>
-          <p><strong>Instructions:</strong></p><div id="projectDetailsInstructions" class="mb-3" style="white-space: pre-line;"></div>
-          <p><strong>Language:</strong> <span id="projectDetailsLanguage"></span></p>
-          <p><strong>Difficulty:</strong> <span id="projectDetailsDifficulty"></span></p>
-          <p><strong>Estimated Time:</strong> <span id="projectDetailsTime"></span> minutes</p>
-          <p><strong>Marks:</strong> <span id="projectDetailsMarks"></span></p>
-          <p><strong>Resources / Links:</strong></p><div id="projectDetailsResources"></div>
+
+          <div class="form-group">
+            <label>Lesson Title *</label>
+            <input id="newLessonTitle" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Lesson Content</label>
+            <textarea id="newLessonContent" class="form-control"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>YouTube Link (optional)</label>
+            <input id="newLessonYoutube" class="form-control" placeholder="https://youtube.com/...">
+          </div>
+
         </div>
+
         <div class="modal-footer">
-          <button class="btn btn-secondary btn-clean" data-dismiss="modal">Close</button>
+          <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button class="btn btn-primary" onclick="createLesson()">Save Lesson</button>
         </div>
+
       </div>
     </div>
   </div>
 
-  <div class="modal fade" id="editProjectModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+  <!-- CREATE PROJECT MODAL -->
+  <div class="modal fade" id="createProjectModal">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
+
         <div class="modal-header">
-          <h5 class="modal-title">Edit / Add Project Details</h5>
-          <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+          <h5>Create Project / Lab</h5>
+          <button class="close" data-dismiss="modal">&times;</button>
         </div>
+
         <div class="modal-body">
-          <input type="hidden" id="editProjectTitleOriginal">
-          <div class="form-group"><label>Project Title</label><input type="text" class="form-control" id="editProjectTitle"></div>
-          <div class="form-group"><label>Description</label><textarea class="form-control" id="editProjectDescription" rows="3"></textarea></div>
-          <div class="form-group"><label>Instructions</label><textarea class="form-control" id="editProjectInstructions" rows="3"></textarea></div>
-          <div class="form-group"><label>Language</label><input type="text" class="form-control" id="editProjectLanguage"></div>
-          <div class="form-group"><label>Difficulty</label><input type="text" class="form-control" id="editProjectDifficulty"></div>
-          <div class="form-group"><label>Estimated Time (minutes)</label><input type="number" class="form-control" id="editProjectTime"></div>
-          <div class="form-group"><label>Marks</label><input type="number" class="form-control" id="editProjectMarks"></div>
-          <div class="form-group"><label>Resources (URL or text)</label><input type="text" class="form-control" id="editProjectResources"></div>
+
+          <div class="form-group">
+            <label>Project Title *</label>
+            <input id="newProjectTitle" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="newProjectDescription" class="form-control"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Instructions</label>
+            <textarea id="newProjectInstructions" class="form-control"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Language</label>
+            <select id="newProjectLanguage" class="form-control">
+              <option value="">Select</option>
+              <option>Python</option>
+              <option>JavaScript</option>
+              <option>Java</option>
+              <option>C</option>
+              <option>C++</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Difficulty</label>
+            <select id="newProjectDifficulty" class="form-control">
+              <option value="">Select</option>
+              <option>Beginner</option>
+              <option>Intermediate</option>
+              <option>Advanced</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="col">
+              <label>Estimated Time</label>
+              <input id="newProjectTime" type="number" class="form-control">
+            </div>
+            <div class="col">
+              <label>Marks</label>
+              <input id="newProjectMarks" type="number" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label>Resources</label>
+            <input id="newProjectResources" class="form-control">
+          </div>
+
         </div>
+
         <div class="modal-footer">
-          <button class="btn btn-primary btn-clean" id="saveProjectBtn">Save</button>
-          <button class="btn btn-secondary btn-clean" data-dismiss="modal">Close</button>
+          <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="saveProjectBtn" class="btn btn-primary">Save Project</button>
         </div>
+
       </div>
     </div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <!-- EDIT PROJECT MODAL -->
+  <div class="modal fade" id="editProjectModal">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5>Edit Project</h5>
+          <button class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+
+          <input type="hidden" id="editOriginalTitle">
+
+          <div class="form-group">
+            <label>Project Title</label>
+            <input id="editProjectTitle" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="editProjectDescription" class="form-control"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Instructions</label>
+            <textarea id="editProjectInstructions" class="form-control"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="col">
+              <label>Language</label>
+              <input id="editProjectLanguage" class="form-control">
+            </div>
+            <div class="col">
+              <label>Difficulty</label>
+              <input id="editProjectDifficulty" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-row mt-2">
+            <div class="col">
+              <label>Estimated Time</label>
+              <input id="editProjectTime" class="form-control">
+            </div>
+            <div class="col">
+              <label>Marks</label>
+              <input id="editProjectMarks" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label>Resources</label>
+            <input id="editProjectResources" class="form-control">
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button class="btn btn-primary" onclick="saveProjectDetails()">Save</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
+  <!-- MAIN PAGE LOGIC -->
   <script>
-    let email = "";
     let T_email = "";
     let course_title = "";
 
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        email = user.email;
-        T_email = user.email;
-        course_title = sessionStorage.getItem("course_title") || "";
-        initPage();
-      } else {
-        window.location.href = "login.html";
-      }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("saveProjectBtn").addEventListener("click", createNewProject);
     });
 
-    function initPage() {
-      loadCourseMeta();
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) return (window.location.href = "login.html");
+
+      T_email = sessionStorage.getItem("T_email") || user.email;
+      course_title = sessionStorage.getItem("course_title");
+
+      loadCourseDetails();
+      loadLessons();
       loadProjects();
-      document.getElementById("saveProjectBtn").addEventListener("click", saveProjectDetails);
-    }
+    });
 
-    function loadCourseMeta() {
-      if (!T_email || !course_title) return;
-      db.collection("teachers").doc(T_email).collection("course").doc(course_title).get()
-        .then(doc => {
-          if (!doc.exists) return;
-          const d = doc.data();
-          document.getElementById("courseTitle").innerText = d.course_title || course_title;
-          document.getElementById("courseid").innerText = d.course_code || d.course_id || "";
-          document.getElementById("courseDescription").innerText = d.course_discription || "";
-        }).catch(err => console.error(err));
-    }
-
-    function loadProjects() {
-      if (!T_email || !course_title) return;
-      const tableBody = document.getElementById("course_table1");
-      tableBody.innerHTML = "";
-      db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("projects")
+    /* --------------------------
+       COURSE DETAILS
+    --------------------------- */
+    function loadCourseDetails() {
+      db.collection("teachers")
+        .doc(T_email)
+        .collection("course")
+        .doc(course_title)
         .get()
-        .then(querySnapshot => {
-          if (querySnapshot.empty) {
-            tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No projects found</td></tr>';
-            return;
-          }
-          querySnapshot.forEach(doc => {
-            const p = doc.data();
-            const titleSafe = escapeHtml(p.project_title || doc.id);
-            const viewBtn = `<button class="btn btn-info btn-clean" onclick="openProjectDetails('${escapeJs(p.project_title)}')"><i class="fas fa-eye"></i> View Details</button>`;
-            const editBtn = `<button class="btn btn-primary btn-clean" onclick="openEditProject('${escapeJs(p.project_title)}')"><i class="fas fa-edit"></i> Edit / Add Details</button>`;
-            const submittedLink = `<span style="color:blue; text-decoration:underline; cursor:pointer;" onclick="openSubmittedCodes('${escapeJs(p.project_title)}')">View Submitted Codes</span>`;
-            const deleteBtn = `<button class="btn btn-danger btn-clean" onclick="deleteProject('${escapeJs(p.project_title)}')"><i class="fas fa-trash"></i> Delete</button>`;
-            const row = `<tr>
-              <td>${titleSafe}</td>
-              <td style="min-width:150px;">${viewBtn}</td>
-              <td style="min-width:160px;">${editBtn}</td>
-              <td style="min-width:180px;">${submittedLink}</td>
-              <td style="min-width:120px;">${deleteBtn}</td>
-            </tr>`;
-            tableBody.innerHTML += row;
-          });
-        })
-        .catch(err => {
-          console.error("Error loading projects:", err);
-          tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Error loading projects</td></tr>';
+        .then(doc => {
+          const d = doc.data();
+          courseTitle.innerText = d.course_title;
+          courseid.innerText = d.course_code;
+          courseDescription.innerText = d.course_discription;
         });
     }
 
-    function openProjectDetails(project_title) {
-      if (!T_email || !course_title) return;
-      const docRef = db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("projects").doc(project_title);
-      docRef.get().then(doc => {
-        if (!doc.exists) {
-          return db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("projects").where("project_title","==",project_title).get().then(qs => qs.empty ? null : qs.docs[0]);
-        }
-        return doc;
-      }).then(docSnap => {
-        if (!docSnap) {
-          Swal.fire({ icon: 'error', title: 'Not found', text: 'Project details not found.' });
-          return;
-        }
-        const d = docSnap.data();
-        document.getElementById("projectDetailsTitle").innerText = d.project_title || "";
-        document.getElementById("projectDetailsDescription").innerText = d.project_description || "No description provided.";
-        document.getElementById("projectDetailsInstructions").innerText = d.project_instructions || "No instructions provided.";
-        document.getElementById("projectDetailsLanguage").innerText = d.project_language || "N/A";
-        document.getElementById("projectDetailsDifficulty").innerText = d.project_difficulty || "N/A";
-        document.getElementById("projectDetailsTime").innerText = d.project_time || "N/A";
-        document.getElementById("projectDetailsMarks").innerText = d.project_marks || "N/A";
-        if (d.project_resources) {
-          const safe = escapeHtml(d.project_resources);
-          document.getElementById("projectDetailsResources").innerHTML = `<a href="${safe}" target="_blank">${safe}</a>`;
-        } else {
-          document.getElementById("projectDetailsResources").innerText = "No resources.";
-        }
-        $('#projectDetailsModal').modal('show');
-      }).catch(err => { console.error(err); Swal.fire({ icon:'error', title:'Error', text:'Failed to load project details.' }); });
+    /* --------------------------
+       LESSONS
+    --------------------------- */
+
+    function loadLessons() {
+      const table = document.getElementById("lessonTable");
+      table.innerHTML = "";
+
+      db.collection("teachers")
+        .doc(T_email)
+        .collection("course")
+        .doc(course_title)
+        .collection("lessons")
+        .get()
+        .then(qs => {
+          qs.forEach(doc => {
+            const d = doc.data();
+
+            const yt = d.youtube
+              ? `<a href="${d.youtube}" target="_blank" class="btn btn-sm btn-outline-danger">Watch</a>`
+              : "";
+
+            table.innerHTML += `
+              <tr>
+                <td>${d.lesson_title}</td>
+                <td><button class="btn btn-primary btn-sm" onclick="viewLesson('${d.lesson_title}')">View</button></td>
+                <td>${yt}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteLesson('${d.lesson_title}')">Delete</button></td>
+              </tr>`;
+          });
+        });
     }
 
-    function openEditProject(project_title) {
-      if (!T_email || !course_title) return;
-      const ref = db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("projects").doc(project_title);
-      ref.get().then(doc => {
-        if (!doc.exists) {
-          Swal.fire("Error","Project not found","error");
-          return;
-        }
-        const d = doc.data();
-        document.getElementById("editProjectTitleOriginal").value = project_title;
-        document.getElementById("editProjectTitle").value = d.project_title || "";
-        document.getElementById("editProjectDescription").value = d.project_description || "";
-        document.getElementById("editProjectInstructions").value = d.project_instructions || "";
-        document.getElementById("editProjectLanguage").value = d.project_language || "";
-        document.getElementById("editProjectDifficulty").value = d.project_difficulty || "";
-        document.getElementById("editProjectTime").value = d.project_time || "";
-        document.getElementById("editProjectMarks").value = d.project_marks || "";
-        document.getElementById("editProjectResources").value = d.project_resources || "";
-        $('#editProjectModal').modal('show');
-      }).catch(err => { console.error(err); Swal.fire("Error","Failed to open edit modal","error"); });
+    function createLesson() {
+      const title = newLessonTitle.value.trim();
+      const content = newLessonContent.value.trim();
+      const yt = newLessonYoutube.value.trim();
+
+      if (!title) return Swal.fire("Error", "Lesson title required", "error");
+
+      db.collection("teachers")
+        .doc(T_email)
+        .collection("course")
+        .doc(course_title)
+        .collection("lessons")
+        .doc(title)
+        .set({
+          lesson_title: title,
+          lesson_content: content,
+          youtube: yt
+        })
+        .then(() => {
+          $("#createLessonModal").modal("hide");
+          loadLessons();
+          Swal.fire("Success", "Lesson created!", "success");
+          newLessonTitle.value = "";
+          newLessonContent.value = "";
+          newLessonYoutube.value = "";
+        });
     }
 
-    function saveProjectDetails() {
-      const original = document.getElementById("editProjectTitleOriginal").value || "";
-      const updated = {
-        project_title: (document.getElementById("editProjectTitle").value || "").trim(),
-        project_description: document.getElementById("editProjectDescription").value || "",
-        project_instructions: document.getElementById("editProjectInstructions").value || "",
-        project_language: document.getElementById("editProjectLanguage").value || "",
-        project_difficulty: document.getElementById("editProjectDifficulty").value || "",
-        project_time: document.getElementById("editProjectTime").value || "",
-        project_marks: document.getElementById("editProjectMarks").value || "",
-        project_resources: document.getElementById("editProjectResources").value || "",
-        updated_at: firebase.firestore.FieldValue.serverTimestamp()
-      };
-      const col = db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("projects");
-      if (!updated.project_title) {
-        Swal.fire({ icon:'error', title:'Missing Title', text:'Please enter project title.' });
-        return;
-      }
-      if (updated.project_title !== original) {
-        col.doc(updated.project_title).set(updated).then(() => {
-          return col.doc(original).delete();
-        }).then(() => {
-          $('#editProjectModal').modal('hide');
-          loadProjects();
-        }).catch(err => { console.error(err); Swal.fire("Error","Failed to rename/save project","error"); });
-      } else {
-        col.doc(original).update(updated).then(() => {
-          $('#editProjectModal').modal('hide');
-          loadProjects();
-        }).catch(err => { console.error(err); Swal.fire("Error","Failed to save project","error"); });
-      }
-    }
-
-    function openSubmittedCodes(project_title) {
-      sessionStorage.setItem("submitted_project_title", project_title);
-      sessionStorage.setItem("submitted_course_title", course_title);
-      window.open("submitted_codes_list.html","_blank");
-    }
-
-    function deleteProject(project_title) {
+    function deleteLesson(title) {
       Swal.fire({
-        title: 'Delete project?',
-        text: `Are you sure you want to delete "${project_title}"? This cannot be undone.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete',
-        cancelButtonText: 'Cancel'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("projects").doc(project_title).delete()
-            .then(() => { Swal.fire({ icon:'success', title:'Deleted', timer:900, showConfirmButton:false }); loadProjects(); })
-            .catch(err => { console.error(err); Swal.fire("Error","Failed to delete project","error"); });
-        }
+        title: "Delete Lesson?",
+        text: "This cannot be undone.",
+        icon: "warning",
+        showCancelButton: true
+      }).then(res => {
+        if (!res.isConfirmed) return;
+
+        db.collection("teachers")
+          .doc(T_email)
+          .collection("course")
+          .doc(course_title)
+          .collection("lessons")
+          .doc(title)
+          .delete()
+          .then(() => {
+            Swal.fire("Deleted!", "Lesson removed successfully.", "success");
+            loadLessons();
+          });
       });
     }
 
-    function signOut() { firebase.auth().signOut().then(()=>window.location.replace('login.html')); }
+    /* --------------------------
+       PROJECTS
+    --------------------------- */
 
-    function escapeHtml(unsafe) {
-      if (unsafe === undefined || unsafe === null) return '';
-      return String(unsafe).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+    function loadProjects() {
+      const table = document.getElementById("projectTable");
+      table.innerHTML = "";
+
+      db.collection("teachers")
+        .doc(T_email)
+        .collection("course")
+        .doc(course_title)
+        .collection("projects")
+        .get()
+        .then(qs => {
+          qs.forEach(doc => {
+            const p = doc.data();
+            table.innerHTML += `
+              <tr>
+                <td>${p.project_title}</td>
+                <td><button class="btn btn-info btn-sm" onclick="openProjectDetails('${p.project_title}')">View</button></td>
+                <td><button class="btn btn-primary btn-sm" onclick="openEditProject('${p.project_title}')">Edit</button></td>
+                <td><button class="btn btn-secondary btn-sm" onclick="openSubmittedCodes('${p.project_title}')">Submissions</button></td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteProject('${p.project_title}')">Delete</button></td>
+              </tr>`;
+          });
+        });
     }
-    function escapeJs(s) {
-      if (s === undefined || s === null) return '';
-      return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+
+    function createNewProject() {
+      const title = newProjectTitle.value.trim();
+      if (!title) return Swal.fire("Missing", "Project title required", "error");
+
+      const data = {
+        project_title: title,
+        project_description: newProjectDescription.value.trim(),
+        project_instructions: newProjectInstructions.value.trim(),
+        project_language: newProjectLanguage.value,
+        project_difficulty: newProjectDifficulty.value,
+        project_time: newProjectTime.value,
+        project_marks: newProjectMarks.value,
+        project_resources: newProjectResources.value.trim(),
+        created_at: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      db.collection("teachers")
+        .doc(T_email)
+        .collection("course")
+        .doc(course_title)
+        .collection("projects")
+        .doc(title)
+        .set(data)
+        .then(() => {
+          $("#createProjectModal").modal("hide");
+          loadProjects();
+          Swal.fire("Success", "Project created!", "success");
+        });
     }
+
+    function openEditProject(title) {
+      const ref = db.collection("teachers")
+        .doc(T_email)
+        .collection("course")
+        .doc(course_title)
+        .collection("projects")
+        .doc(title);
+
+      ref.get().then(doc => {
+        const p = doc.data();
+        editOriginalTitle.value = title;
+        editProjectTitle.value = p.project_title;
+        editProjectDescription.value = p.project_description;
+        editProjectInstructions.value = p.project_instructions;
+        editProjectLanguage.value = p.project_language;
+        editProjectDifficulty.value = p.project_difficulty;
+        editProjectTime.value = p.project_time;
+        editProjectMarks.value = p.project_marks;
+        editProjectResources.value = p.project_resources;
+        $("#editProjectModal").modal("show");
+      });
+    }
+
+    function saveProjectDetails() {
+      const original = editOriginalTitle.value;
+      const updatedTitle = editProjectTitle.value.trim();
+
+      const updated = {
+        project_title: updatedTitle,
+        project_description: editProjectDescription.value.trim(),
+        project_instructions: editProjectInstructions.value.trim(),
+        project_language: editProjectLanguage.value,
+        project_difficulty: editProjectDifficulty.value,
+        project_time: editProjectTime.value,
+        project_marks: editProjectMarks.value,
+        project_resources: editProjectResources.value.trim(),
+        updated_at: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      const col = db.collection("teachers")
+        .doc(T_email)
+        .collection("course")
+        .doc(course_title)
+        .collection("projects");
+
+      if (original !== updatedTitle) {
+        col.doc(updatedTitle).set(updated)
+          .then(() => col.doc(original).delete())
+          .then(() => {
+            $("#editProjectModal").modal("hide");
+            loadProjects();
+            Swal.fire("Updated!", "Project renamed and updated successfully.", "success");
+          });
+      } else {
+        col.doc(original).update(updated)
+          .then(() => {
+            $("#editProjectModal").modal("hide");
+            loadProjects();
+            Swal.fire("Updated!", "Project updated successfully.", "success");
+          });
+      }
+    }
+
+    function deleteProject(title) {
+      Swal.fire({
+        title: "Delete Project?",
+        text: "This cannot be undone.",
+        icon: "warning",
+        showCancelButton: true
+      }).then(res => {
+        if (!res.isConfirmed) return;
+
+        db.collection("teachers")
+          .doc(T_email)
+          .collection("course")
+          .doc(course_title)
+          .collection("projects")
+          .doc(title)
+          .delete()
+          .then(() => {
+            Swal.fire("Deleted!", "Project removed.", "success");
+            loadProjects();
+          });
+      });
+    }
+
+    /* --------------------------
+       MISC
+    --------------------------- */
+
+    function openSubmittedCodes(title) {
+      sessionStorage.setItem("submitted_project_title", title);
+      sessionStorage.setItem("submitted_course_title", course_title);
+      window.open("submitted_codes_list.html", "_blank");
+    }
+
+    function viewLesson(title) {
+      Swal.fire("Lesson", "Display lesson content here. (You can enhance this)", "info");
+    }
+
+    function openProjectDetails(title) {
+      Swal.fire("Project Details", "Display project details here.", "info");
+    }
+
+    function signOut() {
+      firebase.auth().signOut().then(() => window.location.replace("login.html"));
+    }
+
   </script>
+
 </body>
+
 </html>

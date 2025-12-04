@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/course_details.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <!-- Font Awesome icons (free version)-->
-    <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        crossorigin="anonymous">
+
+    <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js"></script>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
@@ -20,12 +20,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 
     <script>
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-
         var firebaseConfig = {
             apiKey: "AIzaSyBTNIg29kbCt-GhFenHNZa34Xkl8M4k8cw",
             authDomain: "block-5acdc.firebaseapp.com",
@@ -35,321 +32,324 @@
             appId: "1:57460143611:web:3efd4e65ab5898b59fc75e",
             measurementId: "G-31XZGSV3WT"
         };
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
-
 
         var db = firebase.firestore();
     </script>
 
+    <style>
+        #lessonSection, #projectSection {
+            display: none; /* hidden until enrollment */
+        }
+    </style>
+
 </head>
 
 <body>
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-dark " id="navbar-home">
         <a class="navbar-brand" href="dashboard_stud.html"><i class="fa fa-home fa-2x" id="home"></i></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto" id="nav-list">
                 <li class="nav-item active">
-                    <button type="button" class="btn-sm btn btn-primary mr-sm-1"><a class="nav-link" id="nav_text"
-                            href="stud_my_projects.html">My Projects</a></button>
+                    <button type="button" class="btn-sm btn btn-primary mr-sm-1">
+                        <a class="nav-link" id="nav_text" href="stud_my_projects.html">My Projects</a>
+                    </button>
                 </li>
-                <li>
-                    <img src="assets/prof.jpeg" alt="" height="45px" width="45px">
-                </li>
+                <li><img src="assets/prof.jpeg" height="45" width="45"></li>
+
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="nav_text" href="#" id="navbarDropdownMenuLink" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="nav-link dropdown-toggle" id="nav_text" data-toggle="dropdown"></a>
+                    <div class="dropdown-menu dropdown-menu-right">
                         <a class="dropdown-item" href="my_profile.html">My Profile</a>
                         <a class="dropdown-item" href="stud_courselist.html">View Courses</a>
-                        <a class="dropdown-item" id="signOut" onclick="signOut()">Logout</a>
+                        <a class="dropdown-item" onclick="signOut()">Logout</a>
                     </div>
                 </li>
-
-        </div>
-
-        </ul>
+            </ul>
         </div>
     </nav>
     <!-- Navbar end -->
 
     <div class="container">
-        <div class="row ">
-            <div data-spy="scroll" class="col-12 mt-md-5" id="box">
-                <h1 id="courseTitle" class=" m-md-3">Course_Title</h1>
-                <div id="courseDescription" class="m-md-3">
+        <div class="row">
+            <div class="col-12 mt-md-5" id="box">
 
+                <h1 id="courseTitle" class="m-md-3">Course_Title</h1>
+                <div id="courseDescription" class="m-md-3"></div>
+
+                <!-- LESSONS (hidden until enrolled) -->
+                <div id="lessonSection">
+                    <h3>Lessons</h3>
+                    <table class="table table-bordered col-sm-8 ml-md-3">
+                        <thead>
+                            <tr><th>Name</th><th>View</th></tr>
+                        </thead>
+                        <tbody id="course_table"></tbody>
+                    </table>
                 </div>
-                <h3>Lessons</h3>
-                <table class="table table-bordered col-sm-8 ml-md-3">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
 
-                            <th scope="col">Last</th>
-                        </tr>
-                    </thead>
-                    <tbody id="course_table">
-
-                    </tbody>
-                </table>
-
-                <h3>Projects</h3>
-                <table class="table table-bordered col-sm-8 ml-md-3">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-
-                    
-                        </tr>
-                    </thead>
-                    <tbody id="course_table1">
-
-                    </tbody>
-                </table>
+                <!-- PROJECTS (hidden until enrolled) -->
+                <div id="projectSection">
+                    <h3>Projects</h3>
+                    <table class="table table-bordered col-sm-8 ml-md-3">
+                        <thead>
+                            <tr><th>Name</th></tr>
+                        </thead>
+                        <tbody id="course_table1"></tbody>
+                    </table>
+                </div>
 
                 <br><br>
-                <button type="button" class="btn btn-primary ml-md-3" data-toggle="modal"
+
+                <!-- ENROLL BUTTON (only shown if NOT enrolled) -->
+                <button type="button" id="enrollBtn" class="btn btn-primary ml-md-3" data-toggle="modal"
                     data-target="#exampleModal2">Enroll Now</button>
+
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <!-- LESSON VIEW MODAL -->
+    <div class="modal fade" id="exampleModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
+
                 <div class="modal-header">
                     <h5 class="modal-title" id="lessontitle"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button class="close" data-dismiss="modal">&times;</button>
                 </div>
+
                 <div class="modal-body">
-                    <div id="lessonDescription" class="m-md-3"></div>
-                    <div class="embed-responsive embed-responsive-16by9">
-                        <iframe id="lessonLink" src="" title="YouTube video player" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen></iframe>
+                    <div id="lessonDescription"></div>
+
+                    <div class="embed-responsive embed-responsive-16by9 mt-3">
+                        <iframe id="lessonLink" src="" frameborder="0" allowfullscreen></iframe>
                     </div>
-
                 </div>
+
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
+
             </div>
         </div>
     </div>
 
-
-    <!-- Modal for course code on enroll -->
-    <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <!-- ENROLL MODAL -->
+    <div class="modal fade" id="exampleModal2">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
+
                 <div class="modal-header">
-                    <h5 class="modal-title" id="">Course Code</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title">Course Code</h5>
+                    <button class="close" data-dismiss="modal">&times;</button>
                 </div>
+
                 <div class="modal-body">
-                    <div id="" class="form-group m-md-3">
-                        <label><b>Enter the code of the course to Enroll</b></label>
-                        <input type="text" class="form-control" id="courseId">
-                    </div>
+                    <label><b>Enter the course code to enroll</b></label>
+                    <input type="text" class="form-control" id="courseId">
                 </div>
+
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-secondary" onclick="enroll()">Enroll</button>
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" onclick="enroll()">Enroll</button>
                 </div>
+
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
-
-
-    <!--NavbarScript-->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
-        crossorigin="anonymous"></script>
 
     <script>
 
-
         var email = "";
+        var course_title = sessionStorage.getItem("course_title");
+        var T_email = sessionStorage.getItem("T_email");
 
-        firebase.auth().onAuthStateChanged(function (user) {
+        /* ---------------------------
+            AUTH CHECK
+        ---------------------------- */
+        firebase.auth().onAuthStateChanged(user => {
             if (user) {
-                // User is signed in.
                 email = user.email;
+                checkEnrollment(); // <--- NEW
+                loadCourseHeader();
             } else {
-                // No user is signed in.
                 window.location.href = "login.html";
             }
         });
 
-        var course_title = sessionStorage.getItem("course_title");
-        var T_email = sessionStorage.getItem("T_email");
 
-        var docRef1 = db.collection("teachers").doc(T_email).collection("course").where("course_title", "==", course_title);
-        docRef1.get()
-            .then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    // doc.data() is never undefined for query doc snapshots
-                    console.log(doc.id, " => ", doc.data());
-                    document.getElementById("courseTitle").innerHTML = doc.data().course_title;
-                    document.getElementById("courseDescription").innerHTML = doc.data().course_discription;
+        /* ---------------------------
+            CHECK IF STUDENT IS ENROLLED
+        ---------------------------- */
+        function checkEnrollment() {
+            db.collection("students")
+                .doc(email)
+                .collection("EnrolledCourses")
+                .doc(course_title)
+                .get()
+                .then(doc => {
+
+                    if (doc.exists) {
+                        // Student is enrolled → show lessons + projects
+                        document.getElementById("lessonSection").style.display = "block";
+                        document.getElementById("projectSection").style.display = "block";
+                        document.getElementById("enrollBtn").style.display = "none";
+
+                        loadLessons();
+                        loadProjects();
+                    } else {
+                        // Not enrolled → hide them
+                        document.getElementById("lessonSection").style.display = "none";
+                        document.getElementById("projectSection").style.display = "none";
+                        document.getElementById("enrollBtn").style.display = "block";
+                    }
                 });
-            })
-            .catch((error) => {
-                console.log("Error getting documents: ", error);
-            });
-
-        db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("lessons")
-            .get()
-            .then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    let data = doc.data();
-                    let row = '<tr>';
-                    row += `<td value="${data.lesson_title}">${data.lesson_title}</td>`;
-                    row += `<td><button type="button" id="${data.lesson_title}" onclick="viewLesson(this.id)" data-toggle="modal"  data-target="#exampleModal" class="btn btn-primary">View</button></td>`;
-                    row += `</tr>`;
-
-                    let droplist = document.getElementById('course_table')
-                    droplist.innerHTML += row
-                })
-            })
-            .catch(err => {
-                console.log(`Error: ${err}`)
-            });
+        }
 
 
-            db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("projects")
-            .get()
-            .then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    let data = doc.data();
-                    let row = '<tr>';
-                    row += `<td value="${data.project_title}">${data.project_title}</td>`;
-                    row += `</tr>`;
+        /* ---------------------------
+            COURSE HEADER
+        ---------------------------- */
+        function loadCourseHeader() {
+            db.collection("teachers").doc(T_email).collection("course")
+                .where("course_title", "==", course_title)
+                .get()
+                .then(qs => {
+                    qs.forEach(doc => {
+                        let d = doc.data();
+                        document.getElementById("courseTitle").innerHTML = d.course_title;
+                        document.getElementById("courseDescription").innerHTML = d.course_discription;
+                    });
+                });
+        }
 
-                    let droplist = document.getElementById('course_table1')
-                    droplist.innerHTML += row
-                })
-            })
-            .catch(err => {
-                console.log(`Error: ${err}`)
-            });
 
+        /* ---------------------------
+            LOAD LESSONS
+        ---------------------------- */
+        function loadLessons() {
+            db.collection("teachers").doc(T_email)
+                .collection("course").doc(course_title)
+                .collection("lessons")
+                .get()
+                .then(qs => {
+                    qs.forEach(doc => {
+                        let d = doc.data();
+                        let row = `
+                            <tr>
+                                <td>${d.lesson_title}</td>
+                                <td><button class="btn btn-primary" onclick="viewLesson('${d.lesson_title}')" data-toggle="modal" data-target="#exampleModal">View</button></td>
+                            </tr>`;
+                        document.getElementById("course_table").innerHTML += row;
+                    });
+                });
+        }
+
+
+        /* ---------------------------
+            LOAD PROJECTS
+        ---------------------------- */
+        function loadProjects() {
+            db.collection("teachers").doc(T_email)
+                .collection("course").doc(course_title)
+                .collection("projects")
+                .get()
+                .then(qs => {
+                    qs.forEach(doc => {
+                        let d = doc.data();
+                        let row = `
+                            <tr><td>${d.project_title}</td></tr>`;
+                        document.getElementById("course_table1").innerHTML += row;
+                    });
+                });
+        }
+
+
+        /* ---------------------------
+            VIEW LESSON
+        ---------------------------- */
         function viewLesson(lesson_title) {
-            console.log(lesson_title);
-            sessionStorage.setItem("lesson_title", lesson_title);
-            var lesson_title = sessionStorage.getItem('lesson_title');
+            db.collection("teachers").doc(T_email)
+                .collection("course").doc(course_title)
+                .collection("lessons")
+                .where("lesson_title", "==", lesson_title)
+                .get()
+                .then(qs => {
+                    qs.forEach(doc => {
+                        let d = doc.data();
 
-            var docRef2 = db.collection("teachers").doc(T_email).collection("course").doc(course_title).collection("lessons").where("lesson_title", "==", lesson_title);
-            docRef2.get()
-                .then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        // doc.data() is never undefined for query doc snapshots
-                        console.log(doc.id, " => ", doc.data());
-                        document.getElementById("lessontitle").innerHTML = doc.data().lesson_title;
-                        document.getElementById("lessonDescription").innerHTML = doc.data().lesson_discription;
-                        var link = document.getElementById("lessonLink");
-                        var str = doc.data().lesson_link;
-                        var res = str.split("=");
-                        var str1 = "https://www.youtube.com/embed/";
-                        var final_link = str1.concat(res[1]);
-                        link.setAttribute("src", final_link)
+                        document.getElementById("lessontitle").innerHTML = d.lesson_title;
+                        document.getElementById("lessonDescription").innerHTML = d.lesson_discription;
+
+                        let link = d.lesson_link;
+                        let videoId = link.split("v=")[1];
+                        document.getElementById("lessonLink").src =
+                            "https://www.youtube.com/embed/" + videoId;
                     });
-                })
-                .catch((error) => {
-                    console.log("Error getting documents: ", error);
                 });
         }
 
 
-
+        /* ---------------------------
+            ENROLL FUNCTION
+        ---------------------------- */
         function enroll() {
-            var courseId = document.getElementById("courseId").value;
-            var T_email = sessionStorage.getItem("T_email");
-            console.log(courseId);
-            var docRef2 = db.collection("teachers").where("email", "==", T_email);
-            var docRef3 = db.collection("teachers").doc(T_email).collection("course").where("course_title", "==",course_title);           
-            
-            
-            docRef3.get()
-                .then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        // console.log("Document data:", doc.data());
-                        console.log(doc.data().course_code);
+            let enteredCode = document.getElementById("courseId").value;
 
-                        if(doc.data().course_code == courseId){
-                            console.log("true");
-                            var docRef2 = db.collection("teachers").where("email","==",T_email);
-            docRef2.get()
-                .then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        // doc.data() is never undefined for query doc snapshots
+            // Check course code
+            db.collection("teachers").doc(T_email)
+                .collection("course").doc(course_title)
+                .get()
+                .then(doc => {
+                    if (!doc.exists) return alert("Course not found.");
 
-                     
+                    let data = doc.data();
 
-                db.collection('students').doc(email).collection('EnrolledCourses').doc(course_title).set({
-                course_title: course_title,
-                teacher_name: doc.data().name,
-                teacher_email:T_email
+                    if (data.course_code !== enteredCode) {
+                        alert("Invalid Course Code!");
+                        return;
+                    }
 
-            }).then(() =>{
-                    window.location.href="stud_enrolledcourseslist.html";
+                    // Add to student's enrolled list
+                    db.collection("students").doc(email)
+                        .collection("EnrolledCourses").doc(course_title)
+                        .set({
+                            course_title: course_title,
+                            teacher_email: T_email,
+                            enrolledAt: Date.now()
+                        })
+                        .then(() => {
+                            $("#exampleModal2").modal("hide");
+                            alert("Enrollment Successful!");
+
+                            location.reload(); // show lessons/projects
+                        });
+
                 });
-
-                    });
-                })
-                .catch((error) => {
-                    console.log("Error getting documents: ", error);
-                });
-
-    
-                
-                    
-                        }
-                        else{
-                            alert("Enter Valid code!");
-                        }
-                        // doc.data() is never undefined for query doc snapshots
-           
-
-                    });
-                })
-                .catch((error) => {
-                    console.log("Error getting documents: ", error);
-                });
-
-                function signOut(){
-                  firebase.auth().signOut().then(()=>{
-                    window.location.href='login.html';
-                  });
-                }
-
-
         }
+
 
         function signOut() {
             firebase.auth().signOut().then(() => {
-                window.location.href = 'login.html';
+                window.location.href = "login.html";
             });
         }
+
     </script>
+
 </body>
 
 </html>

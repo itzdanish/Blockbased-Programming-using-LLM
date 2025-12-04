@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Blockly — Login</title>
+
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -16,7 +17,7 @@
       .role-select { width: 160px; }
     </style>
 
-    <!-- Firebase SDKs (v8) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
@@ -91,7 +92,6 @@
           <div class="modal-body">
             <label class="form-label small">Enter your email</label>
             <input id="resetEmail" type="email" class="form-control" placeholder="you@example.com">
-
             <div id="resetMessage" class="mt-2 small"></div>
           </div>
           <div class="modal-footer">
@@ -103,11 +103,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Shared auth script -->
+    <!-- Shared Firebase Auth Script -->
     <script src="firebase-auth.js"></script>
 
     <script>
-      // Forgot password popup
+      // PASSWORD RESET POPUP
       const resetModal = new bootstrap.Modal(document.getElementById("resetModal"));
 
       document.getElementById('forgotPasswordLink').addEventListener('click', function (e) {
@@ -126,16 +126,13 @@
           return;
         }
 
-        // STEP 1 — Check if email exists
         firebase.auth().fetchSignInMethodsForEmail(email)
           .then((methods) => {
             if (methods.length === 0) {
-              // No account found
               msg.innerHTML = "<span class='text-danger'>This email is not registered.</span>";
               return;
             }
 
-            // STEP 2 — Send reset email (email exists)
             return firebase.auth().sendPasswordResetEmail(email)
               .then(() => {
                 msg.innerHTML = "<span class='text-success'>Reset link sent! Check your inbox.</span>";
@@ -147,18 +144,51 @@
       });
 
 
-      // Google login
+
+      // OPTION 1 — EMAIL + PASSWORD LOGIN
+      document.getElementById("btnEmailLogin").addEventListener("click", function () {
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value.trim();
+        const role = document.getElementById("loginRole").value;
+
+        if (!email) {
+          alert("Please enter an email.");
+          return;
+        }
+        if (!password) {
+          alert("Please enter a password.");
+          return;
+        }
+
+        firebase.auth().signInWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            // Logged in successfully
+            if (role === "Student") {
+              window.location.href = "dashboard_stud.html";
+            } else {
+              window.location.href = "dashboard_teach.html";
+            }
+          })
+          .catch((err) => {
+            alert("Login failed: " + err.message);
+          });
+      });
+
+
+      // OPTION 2 — GOOGLE LOGIN
       document.getElementById('googleSignInBtn').addEventListener('click', function () {
         const role = document.getElementById('loginRole').value;
         window.FirebaseAuthApp.signInWithGoogle(role);
       });
 
-      // Create account
+
+      // CREATE ACCOUNT REDIRECT
       document.getElementById('createAccountLink').addEventListener('click', function (e) {
         e.preventDefault();
         const role = document.getElementById('loginRole').value;
         window.location.href = role === "Student" ? "signupStudent.html" : "signupTeacher.html";
       });
+
     </script>
 
   </body>
