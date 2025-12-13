@@ -71,7 +71,6 @@
         </table>
     </div>
 
-    <!-- VIEW CODE MODAL -->
     <div class="modal fade" id="codeModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-scrollable modal-lg">
             <div class="modal-content">
@@ -89,7 +88,6 @@
         </div>
     </div>
 
-    <!-- GRADING MODAL -->
     <div class="modal fade" id="gradeModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -127,7 +125,6 @@
     </div>
 
 
-    <!-- BOOTSTRAP JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -162,7 +159,6 @@
                                     ? new Date(data.submitted_at.toDate()).toLocaleString()
                                     : "Not recorded";
 
-                                // Grade button logic
                                 let gradeBtn = "";
                                 if (data.marks !== undefined) {
                                     gradeBtn = `<span class="badge badge-success">Graded ✓</span>`;

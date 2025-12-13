@@ -1,8 +1,6 @@
-// firebase-auth.js - Shared auth logic (Firebase JS SDK v8 syntax)
-// Place this file after loading Firebase SDKs in the HTML pages.
 
 (function(){
-  // --- Firebase config (kept from your project) ---
+
   var firebaseConfig = {
     apiKey: "AIzaSyBTNIg29kbCt-GhFenHNZa34Xkl8M4k8cw",
     authDomain: "block-5acdc.firebaseapp.com",
@@ -21,10 +19,10 @@
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
-  // Utility: save user doc in AllUsers and role-specific collection
+
   async function saveUserByEmail(email, name, role) {
     if (!email) return;
-    const docId = email; // using email as document ID (matches your current DB)
+    const docId = email; 
     const userData = {
       email: email,
       name: name || "",
@@ -120,7 +118,7 @@
     auth // expose auth if page wants to use onAuthStateChanged
   };
 
-  // Optional: listen for auth state and log (useful for debugging)
+
   auth.onAuthStateChanged((user) => {
     if (user) {
       // console.log("Auth state: signed in", user.email);

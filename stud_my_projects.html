@@ -21,9 +21,7 @@
         <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
         
         <script>
-            // Your web app's Firebase configuration
-            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-         
+           
             var firebaseConfig = {
                 apiKey: "AIzaSyBTNIg29kbCt-GhFenHNZa34Xkl8M4k8cw",
                 authDomain: "block-5acdc.firebaseapp.com",
@@ -33,7 +31,7 @@
                 appId: "1:57460143611:web:3efd4e65ab5898b59fc75e",
                 measurementId: "G-31XZGSV3WT"
             };
-            // Initialize Firebase
+
             firebase.initializeApp(firebaseConfig);
             firebase.analytics();
 
@@ -79,8 +77,7 @@
           </ul>
           </div>
         </nav>
-          <!-- Navbar end -->
-          <!-- createModal start-->
+  
           <div class="modal" tabindex="-1" role="dialog" id="createModal">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
@@ -101,8 +98,7 @@
               </div>
             </div>
           </div>
-          <!-- createModal end -->
-          <!-- courses list row 1  -->
+
           <div class="container"> 
             <div class="row">
               <div class="col-sm">
@@ -184,10 +180,6 @@
                 });
 
 
-         
-
-         //goToBlockly()
-
          function goToBlockly(project_title)
          {
            sessionStorage.setItem("project_title",project_title);
@@ -195,8 +187,7 @@
            window.location.href="blockly/Main Project/public/public/blockly/demos/code - Copy/index1.html";
          } 
           
-          
-          // Create project
+
           function createFunction()
           {
             
@@ -255,11 +246,6 @@
                   console.log("Error getting document:", error);
               });
 
-                
-            
-                  
-            
-    
 
           }
 

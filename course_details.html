@@ -332,9 +332,7 @@
       loadProjects();
     });
 
-    /* --------------------------
-       COURSE DETAILS
-    --------------------------- */
+    //load course details
     function loadCourseDetails() {
       db.collection("teachers")
         .doc(T_email)
@@ -349,10 +347,7 @@
         });
     }
 
-    /* --------------------------
-       LESSONS
-    --------------------------- */
-
+    //load lessons
     function loadLessons() {
       const table = document.getElementById("lessonTable");
       table.innerHTML = "";
@@ -382,6 +377,7 @@
         });
     }
 
+    //create lessons
     function createLesson() {
       const title = newLessonTitle.value.trim();
       const content = newLessonContent.value.trim();
@@ -410,6 +406,7 @@
         });
     }
 
+    //delete lessons
     function deleteLesson(title) {
       Swal.fire({
         title: "Delete Lesson?",
@@ -433,10 +430,7 @@
       });
     }
 
-    /* --------------------------
-       PROJECTS
-    --------------------------- */
-
+    //load projects
     function loadProjects() {
       const table = document.getElementById("projectTable");
       table.innerHTML = "";
@@ -462,6 +456,7 @@
         });
     }
 
+    //create new project
     function createNewProject() {
       const title = newProjectTitle.value.trim();
       if (!title) return Swal.fire("Missing", "Project title required", "error");
@@ -492,6 +487,7 @@
         });
     }
 
+    //edit project/lab details
     function openEditProject(title) {
       const ref = db.collection("teachers")
         .doc(T_email)
@@ -515,6 +511,7 @@
       });
     }
 
+    //save project details
     function saveProjectDetails() {
       const original = editOriginalTitle.value;
       const updatedTitle = editProjectTitle.value.trim();
@@ -555,6 +552,7 @@
       }
     }
 
+    //delete project
     function deleteProject(title) {
       Swal.fire({
         title: "Delete Project?",
@@ -578,10 +576,8 @@
       });
     }
 
-    /* --------------------------
-       MISC
-    --------------------------- */
 
+    //open submitted codes
     function openSubmittedCodes(title) {
       sessionStorage.setItem("submitted_project_title", title);
       sessionStorage.setItem("submitted_course_title", course_title);

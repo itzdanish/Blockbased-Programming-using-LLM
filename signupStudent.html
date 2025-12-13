@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Blockly — Student Sign Up</title>
 
-  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
@@ -14,7 +13,7 @@
       box-shadow: 0 6px 18px rgba(20,30,50,0.08); }
   </style>
 
-  <!-- Firebase SDK -->
+
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-firestore.js"></script>
@@ -89,7 +88,7 @@ document.getElementById("btnTeachSignup").addEventListener("click", function () 
   const pw = document.getElementById("teachPassword").value;
   const pwc = document.getElementById("teachPasswordConfirm").value;
 
-  // Clear errors
+ 
   document.getElementById("nameError").innerHTML = "";
   document.getElementById("emailError").innerHTML = "";
   document.getElementById("passwordError").innerHTML = "";
@@ -107,7 +106,6 @@ document.getElementById("btnTeachSignup").addEventListener("click", function () 
     valid = false;
   }
 
-  // Validate password rules (NO visual rule box displayed)
   const rulesPassed =
     pw.length >= 8 &&
     /[A-Z]/.test(pw) &&
@@ -132,7 +130,7 @@ document.getElementById("btnTeachSignup").addEventListener("click", function () 
 
 });
 
-// GOOGLE SIGNUP
+//google signup
 document.getElementById("googleSignInTeachBtn").addEventListener("click", function () {
   window.FirebaseAuthApp.signInWithGoogle("Student");
 });
